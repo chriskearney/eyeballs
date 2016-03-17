@@ -1,4 +1,4 @@
-package com.comandante.eyeballs;
+package com.comandante.eyeballs.common;
 
 
 import java.awt.*;

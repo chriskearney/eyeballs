@@ -1,18 +1,18 @@
-package com.comandante.eyeballs;
+package com.comandante.eyeballs.model;
 
 import java.util.Date;
 
 public class EventsApiResponse {
 
-    private Long eventId;
+    private String eventId;
     private Date timestamp;
 
-    public EventsApiResponse(Long eventId, Date timestamp) {
+    public EventsApiResponse(String eventId, Date timestamp) {
         this.eventId = eventId;
         this.timestamp = timestamp;
     }
 
-    public Long getEventId() {
+    public String getEventId() {
         return eventId;
     }
 
