@@ -1,0 +1,13 @@
+.DS_Store
+target
+creeperDb*
+*.swp
+*.iml
+*.ipr
+*.iws
+*.pyc
+*.bak
+.idea/
+*.mapdb*
+*.log
+release.properties
