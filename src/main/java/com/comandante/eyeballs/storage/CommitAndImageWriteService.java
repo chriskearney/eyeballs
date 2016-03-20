@@ -61,14 +61,14 @@ public class CommitAndImageWriteService extends AbstractScheduledService {
 
     private void writeImageToDisk(LocalEvent localEvent) throws IOException, ParseException {
         String day = concurrentDateFormatAccess.convertDateToString(localEvent.getTimestamp());
-        File outputImageFile = new File("motion_events/" + day + "/" + localEvent.getId() + ".jpg");
+        File outputImageFile = new File(eyeballsConfiguration.getLocalStorageDirectory() + "/event_images/" + day + "/" + localEvent.getId() + ".jpg");
         Files.createParentDirs(outputImageFile);
         Files.write(localEvent.getImage(), outputImageFile);
     }
 
     private void readImageFromDisk(LocalEvent localEvent) throws IOException, ParseException {
         String day = concurrentDateFormatAccess.convertDateToString(localEvent.getTimestamp());
-        File inputImageFile = new File("motion_events/" + day + "/" + localEvent.getId() + ".jpg");
+        File inputImageFile = new File(eyeballsConfiguration.getLocalStorageDirectory() + "/event_images/" + day + "/" + localEvent.getId() + ".jpg");
         localEvent.setImage(Files.toByteArray(inputImageFile));
     }
 

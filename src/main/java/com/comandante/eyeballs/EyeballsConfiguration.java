@@ -13,6 +13,9 @@ public class EyeballsConfiguration extends Configuration {
     @NotNull
     private int imageHeight;
 
+    @NotNull
+    private String localStorageDirectory = "local_storage";
+
     @JsonProperty
     public int getImageWidth() {
         return imageWidth;
@@ -21,5 +24,10 @@ public class EyeballsConfiguration extends Configuration {
     @JsonProperty
     public int getImageHeight() {
         return imageHeight;
+    }
+
+    @JsonProperty
+    public String getLocalStorageDirectory() {
+        return localStorageDirectory;
     }
 }
