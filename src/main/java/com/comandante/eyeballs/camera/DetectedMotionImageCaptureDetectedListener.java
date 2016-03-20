@@ -1,5 +1,6 @@
 package com.comandante.eyeballs.camera;
 
+import com.comandante.eyeballs.common.ImageFormatting;
 import com.comandante.eyeballs.model.LocalEvent;
 import com.comandante.eyeballs.storage.LocalEventDatabase;
 import org.apache.log4j.Logger;
@@ -22,15 +23,17 @@ public class DetectedMotionImageCaptureDetectedListener implements MotionDetecte
     @Override
     public void motionDetected(MotionDetectedEvent wme) {
         log.info("Start processing of motion event.");
+        Date timestamp = new Date();
         BufferedImage image = wme.getCurrentOriginal();
+        ImageFormatting.writeDate(image, timestamp);
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         try {
             ImageIO.write(image, "jpg", baos);
         } catch (IOException e) {
-            e.printStackTrace();
+            log.error("Unable to write image.", e);
         }
         byte[] imageData = baos.toByteArray();
-        eyeballsMotionEventDatabase.save(new LocalEvent(UUID.randomUUID().toString(), new Date(), imageData));
-        log.info("Motion Event Detected of strength: " + wme.getArea());
+        eyeballsMotionEventDatabase.save(new LocalEvent(UUID.randomUUID().toString(), timestamp, imageData));
+        log.info("Motion Event Detected of Strength: " + wme.getArea());
     }
 }

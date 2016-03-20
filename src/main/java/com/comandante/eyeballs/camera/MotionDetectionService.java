@@ -15,13 +15,13 @@ public class MotionDetectionService extends AbstractIdleService {
     @Override
     protected void startUp() throws Exception {
         detector = new MotionDetector(Webcam.getDefault());
-        detector.setInterval(2000);
+        detector.setInterval(500);
         //DEFAULT_AREA_THREASHOLD = 0.2;
         //AreaThreshold: The percentage threshold of image that has different pixels for motion to be detected (a double 0-100, with default 0.2).
-        detector.setAreaThreshold(10);
+        //detector.setAreaThreshold(10);
         //DEFAULT_PIXEL_THREASHOLD = 25;
         //PixelThreshold: Intensity threshold whereby a pixel is deemed to different (an int 0 - 255, with default 25).
-        detector.setPixelThreshold(25);
+        //detector.setPixelThreshold(25);
         detector.addMotionListener(motionDetectedListener);
         detector.start();
     }

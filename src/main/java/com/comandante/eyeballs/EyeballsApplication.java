@@ -43,7 +43,6 @@ public class EyeballsApplication extends Application<EyeballsConfiguration> {
         Webcam webcam = Webcam.getDefault();
         webcam.setViewSize(new Dimension(640,480));
         webcam.open();
-        WebcamDriver driver = webcam.getDriver();
         DB db = DBMaker.newFileDB(new File("event_database")).closeOnJvmShutdown().make();
         LocalEventDatabase eyeballsMotionEventDatabase = new LocalEventDatabase(db, eyeballsConfiguration);
         DetectedMotionImageCaptureDetectedListener detectedMotionImageCaptureListener = new DetectedMotionImageCaptureDetectedListener(eyeballsMotionEventDatabase);

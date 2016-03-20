@@ -19,7 +19,6 @@ public interface MotionDetectorAlgorithm {
 
     void setMaxPoints(int i);
 
-
     int getPointRange();
 
     int getMaxPoints();

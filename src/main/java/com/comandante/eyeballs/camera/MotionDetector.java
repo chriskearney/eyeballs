@@ -1,9 +1,10 @@
 package com.comandante.eyeballs.camera;
 
-import com.comandante.eyeballs.common.ImageDateWriter;
+import com.comandante.eyeballs.common.ImageFormatting;
 import com.github.sarxos.webcam.Webcam;
 import com.github.sarxos.webcam.WebcamExceptionHandler;
 import com.github.sarxos.webcam.WebcamMotionListener;
+import com.github.sarxos.webcam.util.ImageUtils;
 import com.google.common.collect.EvictingQueue;
 import org.apache.log4j.Logger;
 
@@ -132,7 +133,6 @@ public class MotionDetector {
         }
 
         BufferedImage currentOriginal = webcam.getImage();
-        ImageDateWriter.writeDate(currentOriginal);
         imageQueue.add(currentOriginal);
 
         if (currentOriginal == null) {
@@ -147,7 +147,7 @@ public class MotionDetector {
         if (movementDetected) {
             motion = true;
             lastMotionTimestamp = System.currentTimeMillis();
-            notifyMotionListeners(currentOriginal);
+            notifyMotionListeners(ImageFormatting.deepCopy(currentOriginal));
         }
 
         previousOriginal = currentOriginal;
