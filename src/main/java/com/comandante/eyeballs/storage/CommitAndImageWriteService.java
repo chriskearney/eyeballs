@@ -3,7 +3,7 @@ package com.comandante.eyeballs.storage;
 import com.comandante.eyeballs.common.ConcurrentDateFormatAccess;
 import com.comandante.eyeballs.EyeballsConfiguration;
 import com.comandante.eyeballs.model.LocalEvent;
-import com.comandante.eyeballs.camera.DetectedMotionImageCaptureDetectedListener;
+import com.comandante.eyeballs.camera.SaveMotionDetectedListener;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.io.Files;
@@ -28,7 +28,7 @@ public class CommitAndImageWriteService extends AbstractScheduledService {
     private final DB db;
     private final EyeballsConfiguration eyeballsConfiguration;
     private final ConcurrentDateFormatAccess concurrentDateFormatAccess = new ConcurrentDateFormatAccess();
-    private static Logger log = Logger.getLogger(DetectedMotionImageCaptureDetectedListener.class.getName());
+    private static Logger log = Logger.getLogger(SaveMotionDetectedListener.class.getName());
 
     public CommitAndImageWriteService(BTreeMap<String, LocalEvent> motionEventStore, DB db, EyeballsConfiguration eyeballsConfiguration) {
         this.motionEventStore = motionEventStore;

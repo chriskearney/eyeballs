@@ -8,10 +8,10 @@ import javax.validation.constraints.NotNull;
 public class EyeballsConfiguration extends Configuration {
 
     @NotNull
-    private int imageWidth;
+    private int imageWidth = 640;
 
     @NotNull
-    private int imageHeight;
+    private int imageHeight = 480;
 
     @NotNull
     private String localStorageDirectory = "local_storage";

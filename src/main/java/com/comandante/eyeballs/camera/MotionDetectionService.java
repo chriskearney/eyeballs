@@ -34,5 +34,10 @@ public class MotionDetectionService extends AbstractIdleService {
     public MotionDetector getDetector() {
         return detector;
     }
+
+    public void startAndWait() {
+        startAsync();
+        awaitRunning();
+    }
 }
 

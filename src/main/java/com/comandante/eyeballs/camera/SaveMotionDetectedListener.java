@@ -12,11 +12,11 @@ import java.io.IOException;
 import java.util.Date;
 import java.util.UUID;
 
-public class DetectedMotionImageCaptureDetectedListener implements MotionDetectedListener {
+public class SaveMotionDetectedListener implements MotionDetectedListener {
     private final LocalEventDatabase eyeballsMotionEventDatabase;
-    private static Logger log = Logger.getLogger(DetectedMotionImageCaptureDetectedListener.class.getName());
+    private static Logger log = Logger.getLogger(SaveMotionDetectedListener.class.getName());
 
-    public DetectedMotionImageCaptureDetectedListener(LocalEventDatabase eyeballsMotionEventDatabase) {
+    public SaveMotionDetectedListener(LocalEventDatabase eyeballsMotionEventDatabase) {
         this.eyeballsMotionEventDatabase = eyeballsMotionEventDatabase;
     }
 

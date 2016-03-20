@@ -1,11 +1,11 @@
 package com.comandante.eyeballs;
 
 import com.comandante.eyeballs.api.EyeballsResource;
-import com.comandante.eyeballs.camera.DetectedMotionImageCaptureDetectedListener;
+import com.comandante.eyeballs.camera.PictureTakingService;
+import com.comandante.eyeballs.camera.SaveMotionDetectedListener;
 import com.comandante.eyeballs.camera.MotionDetectionService;
 import com.comandante.eyeballs.storage.LocalEventDatabase;
 import com.github.sarxos.webcam.Webcam;
-import com.github.sarxos.webcam.WebcamDriver;
 import io.dropwizard.Application;
 import io.dropwizard.setup.Environment;
 import org.mapdb.DB;
@@ -40,16 +40,26 @@ public class EyeballsApplication extends Application<EyeballsConfiguration> {
 
     @Override
     public void run(EyeballsConfiguration eyeballsConfiguration, Environment environment) throws Exception {
+
         Webcam webcam = Webcam.getDefault();
-        webcam.setViewSize(new Dimension(640,480));
+        if (webcam == null) {
+            throw new RuntimeException("No webcam present, or not available to the current user.");
+        }
+
+        PictureTakingService pictureTakingService = new PictureTakingService(webcam);
+        webcam.addWebcamListener(pictureTakingService);
+
+        webcam.setViewSize(new Dimension(eyeballsConfiguration.getImageWidth(), eyeballsConfiguration.getImageHeight()));
         webcam.open();
+
         DB db = DBMaker.newFileDB(new File(eyeballsConfiguration.getLocalStorageDirectory() + "/event_database")).closeOnJvmShutdown().make();
         LocalEventDatabase eyeballsMotionEventDatabase = new LocalEventDatabase(db, eyeballsConfiguration);
-        DetectedMotionImageCaptureDetectedListener detectedMotionImageCaptureListener = new DetectedMotionImageCaptureDetectedListener(eyeballsMotionEventDatabase);
-        MotionDetectionService motionDetectionService = new MotionDetectionService(detectedMotionImageCaptureListener);
-        motionDetectionService.startAsync();
-        motionDetectionService.awaitRunning();
-        EyeballsResource eyeballsResource = new EyeballsResource(webcam, eyeballsMotionEventDatabase, motionDetectionService.getDetector());
+
+        MotionDetectionService motionDetectionService = new MotionDetectionService(new SaveMotionDetectedListener(eyeballsMotionEventDatabase));
+        motionDetectionService.startAndWait();
+
+        EyeballsResource eyeballsResource = new EyeballsResource(webcam, eyeballsMotionEventDatabase, pictureTakingService);
+
         environment.jersey().register(eyeballsResource);
     }
 }

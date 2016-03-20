@@ -4,11 +4,9 @@ import com.comandante.eyeballs.common.ImageFormatting;
 import com.github.sarxos.webcam.Webcam;
 import com.github.sarxos.webcam.WebcamExceptionHandler;
 import com.github.sarxos.webcam.WebcamMotionListener;
-import com.github.sarxos.webcam.util.ImageUtils;
-import com.google.common.collect.EvictingQueue;
 import org.apache.log4j.Logger;
 
-import java.awt.Point;
+import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.List;
@@ -18,9 +16,6 @@ import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 public class MotionDetector {
-
-
-    public final EvictingQueue<BufferedImage> imageQueue = EvictingQueue.create(1);
 
     private static final Logger LOG = Logger.getLogger(MotionDetector.class);
     private static final AtomicInteger NT = new AtomicInteger(0);
@@ -133,7 +128,6 @@ public class MotionDetector {
         }
 
         BufferedImage currentOriginal = webcam.getImage();
-        imageQueue.add(currentOriginal);
 
         if (currentOriginal == null) {
             motion = false;
@@ -251,21 +245,12 @@ public class MotionDetector {
         return detectorAlgorithm.getMaxPoints();
     }
 
-
     public void setPointRange(int i){
         detectorAlgorithm.setPointRange(i);
     }
 
     public int getPointRange(){
         return detectorAlgorithm.getPointRange();
-    }
-
-    public BufferedImage getLastMotionImage() {
-        return detectorAlgorithm.getLastImage();
-    }
-
-    public BufferedImage getLastImage() {
-        return imageQueue.element();
     }
 
 }

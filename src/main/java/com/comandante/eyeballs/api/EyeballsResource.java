@@ -1,6 +1,6 @@
 package com.comandante.eyeballs.api;
 
-import com.comandante.eyeballs.camera.MotionDetector;
+import com.comandante.eyeballs.camera.PictureTakingService;
 import com.comandante.eyeballs.model.EventsApiResponse;
 import com.comandante.eyeballs.model.LocalEvent;
 import com.comandante.eyeballs.storage.LocalEventDatabase;
@@ -23,12 +23,12 @@ public class EyeballsResource {
 
     private final Webcam webcam;
     private final LocalEventDatabase database;
-    private final MotionDetector motionDetector;
+    private final PictureTakingService pictureTakingService;
 
-    public EyeballsResource(Webcam webcam, LocalEventDatabase database, MotionDetector motionDetector) {
+    public EyeballsResource(Webcam webcam, LocalEventDatabase database, PictureTakingService pictureTakingService) {
         this.webcam = webcam;
         this.database = database;
-        this.motionDetector = motionDetector;
+        this.pictureTakingService = pictureTakingService;
     }
 
 
@@ -36,14 +36,14 @@ public class EyeballsResource {
     @Path("/image")
     @Produces("image/png")
     public Response getImage() throws IOException {
-        return Response.ok(motionDetector.getLastImage()).build();
+        return Response.ok(pictureTakingService.getLatestImage()).build();
     }
 
     @GET
     @Path("/event/last/image")
     @Produces("image/png")
     public Response getLastMotionImage() throws IOException {
-        return Response.ok(motionDetector.getLastMotionImage()).build();
+        return Response.ok(pictureTakingService.getLatestImage()).build();
     }
 
     @GET
