@@ -6,6 +6,7 @@ import com.comandante.eyeballs.camera.SaveMotionDetectedListener;
 import com.comandante.eyeballs.camera.MotionDetectionService;
 import com.comandante.eyeballs.storage.LocalEventDatabase;
 import com.github.sarxos.webcam.Webcam;
+import com.google.common.io.Files;
 import io.dropwizard.Application;
 import io.dropwizard.setup.Environment;
 import org.mapdb.DB;
@@ -51,6 +52,9 @@ public class EyeballsApplication extends Application<EyeballsConfiguration> {
 
         webcam.setViewSize(new Dimension(eyeballsConfiguration.getImageWidth(), eyeballsConfiguration.getImageHeight()));
         webcam.open();
+
+        File file = new File(eyeballsConfiguration.getLocalStorageDirectory() + "/event_database");
+        Files.createParentDirs(file);
 
         DB db = DBMaker.newFileDB(new File(eyeballsConfiguration.getLocalStorageDirectory() + "/event_database")).closeOnJvmShutdown().make();
         LocalEventDatabase eyeballsMotionEventDatabase = new LocalEventDatabase(db, eyeballsConfiguration);
