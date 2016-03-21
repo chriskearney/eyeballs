@@ -11,3 +11,4 @@ creeperDb*
 *.mapdb*
 *.log
 release.properties
+local_storage/
