@@ -11,14 +11,14 @@ public class EventsView extends View {
 
     private static final String TEMPLATE_NAME = "events.ftl";
 
-    private final LocalEventDatabase localEventDatabase;
+    public final List<String> events;
 
-    public EventsView(String templateName, LocalEventDatabase localEventDatabase) {
+    public EventsView(List<String> events) {
         super(TEMPLATE_NAME);
-        this.localEventDatabase = localEventDatabase;
+        this.events = events;
     }
 
-    public List<LocalEvent> getRecentEvents(int num) {
-        return Lists.newArrayList(localEventDatabase.getEventQueue().iterator());
+    public List<String> getEvents() {
+        return events;
     }
 }

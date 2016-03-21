@@ -6,6 +6,7 @@ import com.comandante.eyeballs.model.LocalEvent;
 import com.comandante.eyeballs.storage.LocalEventDatabase;
 import com.github.sarxos.webcam.Webcam;
 import com.google.common.collect.Lists;
+import io.dropwizard.views.View;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -68,5 +69,17 @@ public class EyeballsResource {
         }
         byte[] pngImageBytes = eyeballMotionEvent.get().getImage();
         return Response.ok(pngImageBytes).build();
+    }
+
+    @GET
+    @Path("/event")
+    @Produces(MediaType.TEXT_HTML)
+    public View getRecentEventsView() {
+        List<LocalEvent> recentEvents = database.getRecentEvents(10);
+        List<String> ids = Lists.newArrayList();
+        for (LocalEvent event: recentEvents) {
+            ids.add(event.getId());
+        }
+        return new EventsView(ids);
     }
 }
