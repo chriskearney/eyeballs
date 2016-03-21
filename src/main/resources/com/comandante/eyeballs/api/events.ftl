@@ -3,7 +3,7 @@
     <body>
         <h1>Recent events..</h1>
      <#list events as item>
-     <a href="http://localhost:4444/event/${item}">${item}</a><br>
+     <a href="http://localhost:4444/event/${item.id}">${item.timestamp?datetime}</a><br>
      </#list>
     </body>
 </html>
