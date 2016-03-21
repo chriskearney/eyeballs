@@ -75,11 +75,6 @@ public class EyeballsResource {
     @Path("/event")
     @Produces(MediaType.TEXT_HTML)
     public View getRecentEventsView() {
-        List<LocalEvent> recentEvents = database.getRecentEvents(10);
-        List<String> ids = Lists.newArrayList();
-        for (LocalEvent event: recentEvents) {
-            ids.add(event.getId());
-        }
-        return new EventsView(ids);
+        return new EventsView(database.getRecentEvents(10));
     }
 }
