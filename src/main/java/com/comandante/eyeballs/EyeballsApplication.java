@@ -8,7 +8,9 @@ import com.comandante.eyeballs.storage.LocalEventDatabase;
 import com.github.sarxos.webcam.Webcam;
 import com.google.common.io.Files;
 import io.dropwizard.Application;
+import io.dropwizard.setup.Bootstrap;
 import io.dropwizard.setup.Environment;
+import io.dropwizard.views.ViewBundle;
 import org.mapdb.DB;
 import org.mapdb.DBMaker;
 
@@ -37,6 +39,11 @@ public class EyeballsApplication extends Application<EyeballsConfiguration> {
 
     public static void main(String[] args) throws Exception {
         new EyeballsApplication().run(args);
+    }
+
+    @Override
+    public void initialize(Bootstrap<EyeballsConfiguration> bootstrap) {
+        bootstrap.addBundle(new ViewBundle<EyeballsConfiguration>());
     }
 
     @Override
