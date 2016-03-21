@@ -12,8 +12,7 @@ import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
+import javax.ws.rs.core.*;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
@@ -74,7 +73,7 @@ public class EyeballsResource {
     @GET
     @Path("/event")
     @Produces(MediaType.TEXT_HTML)
-    public View getRecentEventsView() {
-        return new EventsView(database.getRecentEvents(10));
+    public View getRecentEventsView(@Context UriInfo uriInfo) {
+        return new EventsView(database.getRecentEvents(10), uriInfo);
     }
 }
