@@ -38,6 +38,11 @@
         <version>0.9.1</version>
     </dependency>
     <dependency>
+        <groupId>io.dropwizard</groupId>
+        <artifactId>dropwizard-views</artifactId>
+        <version>0.9.1</version>
+    </dependency>
+    <dependency>
         <groupId>org.mapdb</groupId>
         <artifactId>mapdb</artifactId>
         <version>1.0.7</version>

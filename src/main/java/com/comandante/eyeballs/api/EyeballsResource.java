@@ -49,9 +49,9 @@ public class EyeballsResource {
     @GET
     @Path("/event/recent")
     @Produces(MediaType.APPLICATION_JSON)
-    public List<EventsApiResponse> getEvents() throws IOException {
+    public List<EventsApiResponse> getRecentEvents() throws IOException {
         List<EventsApiResponse> currentEntries = Lists.newArrayList();
-        for (LocalEvent next : database.getEventQueue()) {
+        for (LocalEvent next : database.getRecentEvents(10)) {
             currentEntries.add(new EventsApiResponse(next.getId(), next.getTimestamp()));
         }
         Collections.reverse(currentEntries);
