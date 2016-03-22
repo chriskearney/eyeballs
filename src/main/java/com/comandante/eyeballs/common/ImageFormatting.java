@@ -1,16 +1,9 @@
 package com.comandante.eyeballs.common;
 
 
-import com.sun.tools.doclint.Entity;
-
 import java.awt.*;
 import java.awt.image.BufferedImage;
-import java.awt.image.BufferedImageFilter;
-import java.awt.image.ColorModel;
-import java.awt.image.WritableRaster;
 import java.util.Date;
-
-import static com.sun.tools.doclint.Entity.image;
 
 public class ImageFormatting {
 
