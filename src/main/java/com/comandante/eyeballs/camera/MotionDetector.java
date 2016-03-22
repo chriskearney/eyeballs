@@ -141,7 +141,7 @@ public class MotionDetector {
         if (movementDetected) {
             motion = true;
             lastMotionTimestamp = System.currentTimeMillis();
-            notifyMotionListeners(ImageFormatting.deepCopy(currentOriginal));
+            notifyMotionListeners(currentOriginal);
         }
 
         previousOriginal = currentOriginal;

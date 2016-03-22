@@ -15,12 +15,17 @@ public class EventsView extends View {
 
     public final List<LocalEvent> events;
     private final String baseUrl;
-
+    private boolean displayImage = false;
 
     public EventsView(List<LocalEvent> events, UriInfo uriInfo) {
         super(TEMPLATE_NAME);
         this.events = events;
-        baseUrl = uriInfo.getAbsolutePath().toString();
+        String url = uriInfo.getBaseUri().toString();
+        char c = url.charAt(url.length() - 1);
+        if (c == '/') {
+            url = url.substring(0, url.length()-1);
+        }
+        baseUrl = url;
     }
 
     public List<LocalEvent> getEvents() {
@@ -29,5 +34,13 @@ public class EventsView extends View {
 
     public String getBaseUrl() {
         return baseUrl;
+    }
+
+    public boolean isDisplayImage() {
+        return displayImage;
+    }
+
+    public void setDisplayImage(boolean displayImage) {
+        this.displayImage = displayImage;
     }
 }

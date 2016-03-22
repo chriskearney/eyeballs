@@ -3,21 +3,19 @@ package com.comandante.eyeballs.storage;
 import com.comandante.eyeballs.EyeballsConfiguration;
 import com.comandante.eyeballs.model.LocalEvent;
 import com.comandante.eyeballs.model.LocalEventSerializer;
-import com.google.common.collect.EvictingQueue;
 import com.google.common.collect.Lists;
 import org.mapdb.BTreeMap;
 import org.mapdb.DB;
 
-import java.util.List;
-import java.util.Optional;
+import java.io.Serializable;
+import java.util.*;
+import java.util.concurrent.ConcurrentNavigableMap;
 
 public class LocalEventDatabase {
 
     private final BTreeMap<String, LocalEvent> motionEventStore;
     private final CommitAndImageWriteService commitAndImageWriteService;
     private final EyeballsConfiguration eyeballsConfiguration;
-
-    EvictingQueue<LocalEvent> eventQueue = EvictingQueue.create(60);
 
     public LocalEventDatabase(DB db, EyeballsConfiguration eyeballsConfiguration) {
         this.eyeballsConfiguration = eyeballsConfiguration;
@@ -30,19 +28,25 @@ public class LocalEventDatabase {
     }
 
     public void save(LocalEvent event) {
-        eventQueue.add(event);
         commitAndImageWriteService.add(event);
-    }
-
-    public EvictingQueue<LocalEvent> getEventQueue() {
-        return eventQueue;
     }
 
     public Optional<LocalEvent> getEvent(String id) {
         return commitAndImageWriteService.getEvent(id);
     }
 
-    public List<LocalEvent> getRecentEvents(int num) {
-        return Lists.newArrayList(eventQueue.iterator());
+    public List<LocalEvent> getRecentEvents(long num) {
+        List<LocalEvent> events = Lists.newArrayList();
+        ConcurrentNavigableMap<String, LocalEvent> stringLocalEventConcurrentNavigableMap = motionEventStore.descendingMap();
+        Set<Map.Entry<String, LocalEvent>> entries = stringLocalEventConcurrentNavigableMap.entrySet();
+        int i = 0;
+        for (Map.Entry<String, LocalEvent> event : entries) {
+            if (i >= num) {
+                return events;
+            }
+            events.add(event.getValue());
+            i++;
+        }
+        return events;
     }
 }

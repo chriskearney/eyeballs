@@ -9,6 +9,8 @@ import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.nio.ByteBuffer;
+import java.util.Base64;
 import java.util.Date;
 import java.util.UUID;
 
@@ -24,8 +26,7 @@ public class SaveMotionDetectedListener implements MotionDetectedListener {
     public void motionDetected(MotionDetectedEvent wme) {
         log.info("Start processing of motion event.");
         Date timestamp = new Date();
-        BufferedImage image = wme.getCurrentOriginal();
-        ImageFormatting.writeDate(image, timestamp);
+        BufferedImage image = ImageFormatting.writeDate(wme.getCurrentOriginal(), timestamp);
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         try {
             ImageIO.write(image, "jpg", baos);
@@ -33,7 +34,20 @@ public class SaveMotionDetectedListener implements MotionDetectedListener {
             log.error("Unable to write image.", e);
         }
         byte[] imageData = baos.toByteArray();
-        eyeballsMotionEventDatabase.save(new LocalEvent(UUID.randomUUID().toString(), timestamp, imageData));
+        eyeballsMotionEventDatabase.save(new LocalEvent(timestamp.getTime() + "." + convertUUIDtoBase64(), timestamp, imageData));
         log.info("Motion Event Detected of Strength: " + wme.getArea());
+    }
+
+    public String convertUUIDtoBase64() {
+        UUID uuid = UUID.randomUUID();
+        return convertUUIDtoBase64(uuid);
+    }
+
+    public String convertUUIDtoBase64(UUID uuid) {
+        ByteBuffer bb = ByteBuffer.wrap(new byte[16]);
+        bb.putLong(uuid.getMostSignificantBits());
+        bb.putLong(uuid.getLeastSignificantBits());
+        String base64EncodedId = Base64.getUrlEncoder().encodeToString(bb.array());
+        return base64EncodedId.substring(0, base64EncodedId.length() - 2);
     }
 }

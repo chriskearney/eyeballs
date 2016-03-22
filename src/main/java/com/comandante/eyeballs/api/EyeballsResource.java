@@ -8,10 +8,7 @@ import com.github.sarxos.webcam.Webcam;
 import com.google.common.collect.Lists;
 import io.dropwizard.views.View;
 
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
+import javax.ws.rs.*;
 import javax.ws.rs.core.*;
 import java.io.IOException;
 import java.util.Collections;
@@ -71,9 +68,27 @@ public class EyeballsResource {
     }
 
     @GET
-    @Path("/event")
+    @Path("/view/recent_events/{num}")
+    @Produces(MediaType.TEXT_HTML)
+    public View getRecentEventsView(@Context UriInfo uriInfo,
+                                    @PathParam("num") long num) {
+        return new EventsView(database.getRecentEvents(num), uriInfo);
+    }
+
+    @GET
+    @Path("/view/recent_events/")
     @Produces(MediaType.TEXT_HTML)
     public View getRecentEventsView(@Context UriInfo uriInfo) {
-        return new EventsView(database.getRecentEvents(10), uriInfo);
+        EventsView eventsView = new EventsView(database.getRecentEvents(30), uriInfo);
+        return eventsView;
+    }
+
+    @GET
+    @Path("/view/recent_events/image")
+    @Produces(MediaType.TEXT_HTML)
+    public View getRecentEventsViewImage(@Context UriInfo uriInfo) {
+        EventsView eventsView = new EventsView(database.getRecentEvents(30), uriInfo);
+        eventsView.setDisplayImage(true);
+        return eventsView;
     }
 }

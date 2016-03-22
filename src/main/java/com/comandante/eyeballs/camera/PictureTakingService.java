@@ -20,9 +20,8 @@ public class PictureTakingService implements WebcamListener {
 
     @Override
     public void webcamImageObtained(WebcamEvent we) {
-        BufferedImage bufferedImage = ImageFormatting.deepCopy(we.getImage());
-        ImageFormatting.writeDate(bufferedImage, new Date());
-        cachedPreppedImage.add(bufferedImage);
+        BufferedImage image = ImageFormatting.writeDate(we.getImage(), new Date());
+        cachedPreppedImage.add(image);
     }
 
     @Override
@@ -42,8 +41,8 @@ public class PictureTakingService implements WebcamListener {
 
     public BufferedImage getLatestImage() {
         if (cachedPreppedImage.size() == 0) {
-            BufferedImage image = ImageFormatting.deepCopy(webcam.getImage());
-            ImageFormatting.writeDate(image, new Date());
+            BufferedImage bufferedImage = ImageFormatting.writeDate(webcam.getImage(), new Date());
+            cachedPreppedImage.add(bufferedImage);
         }
         return cachedPreppedImage.element();
     }
