@@ -37,13 +37,6 @@ public class EyeballsResource {
     }
 
     @GET
-    @Path("/event/last/image")
-    @Produces("image/png")
-    public Response getLastMotionImage() throws IOException {
-        return Response.ok(pictureTakingService.getLatestImage()).build();
-    }
-
-    @GET
     @Path("/event/recent")
     @Produces(MediaType.APPLICATION_JSON)
     public List<EventsApiResponse> getRecentEvents() throws IOException {
