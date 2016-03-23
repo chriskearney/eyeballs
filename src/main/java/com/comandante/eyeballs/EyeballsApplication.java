@@ -63,10 +63,15 @@ public class EyeballsApplication extends Application<EyeballsConfiguration> {
         File file = new File(eyeballsConfiguration.getLocalStorageDirectory() + "/event_database");
         Files.createParentDirs(file);
 
-        DB db = DBMaker.newFileDB(new File(eyeballsConfiguration.getLocalStorageDirectory() + "/event_database")).closeOnJvmShutdown().make();
+        DB db = DBMaker.newFileDB(
+                new File(eyeballsConfiguration.getLocalStorageDirectory() + "/event_database"))
+                .closeOnJvmShutdown()
+                .make();
+
         LocalEventDatabase eyeballsMotionEventDatabase = new LocalEventDatabase(db, eyeballsConfiguration);
 
-        MotionDetectionService motionDetectionService = new MotionDetectionService(new SaveMotionDetectedListener(eyeballsMotionEventDatabase));
+        MotionDetectionService motionDetectionService = new MotionDetectionService(eyeballsConfiguration,
+                new SaveMotionDetectedListener(eyeballsMotionEventDatabase));
         motionDetectionService.startAndWait();
 
         EyeballsResource eyeballsResource = new EyeballsResource(webcam, eyeballsMotionEventDatabase, pictureTakingService);

@@ -1,14 +1,18 @@
 package com.comandante.eyeballs.camera;
 
+import com.comandante.eyeballs.EyeballsConfiguration;
 import com.github.sarxos.webcam.Webcam;
 import com.google.common.util.concurrent.AbstractIdleService;
 
 public class MotionDetectionService extends AbstractIdleService {
 
     private final MotionDetectedListener motionDetectedListener;
+    private final EyeballsConfiguration eyeballsConfiguration;
+
     private MotionDetector detector;
 
-    public MotionDetectionService(MotionDetectedListener motionDetectedListener) {
+    public MotionDetectionService(EyeballsConfiguration eyeballsConfiguration, MotionDetectedListener motionDetectedListener) {
+        this.eyeballsConfiguration = eyeballsConfiguration;
         this.motionDetectedListener = motionDetectedListener;
     }
 
@@ -18,10 +22,10 @@ public class MotionDetectionService extends AbstractIdleService {
         detector.setInterval(500);
         //DEFAULT_AREA_THREASHOLD = 0.2;
         //AreaThreshold: The percentage threshold of image that has different pixels for motion to be detected (a double 0-100, with default 0.2).
-        //detector.setAreaThreshold(10);
+        detector.setAreaThreshold(eyeballsConfiguration.getAreaThreshold());
         //DEFAULT_PIXEL_THREASHOLD = 25;
         //PixelThreshold: Intensity threshold whereby a pixel is deemed to different (an int 0 - 255, with default 25).
-        //detector.setPixelThreshold(25);
+        detector.setPixelThreshold(eyeballsConfiguration.getPixelDifferentThreshold());
         detector.addMotionListener(motionDetectedListener);
         detector.start();
     }
@@ -29,10 +33,6 @@ public class MotionDetectionService extends AbstractIdleService {
     @Override
     protected void shutDown() throws Exception {
         detector.stop();
-    }
-
-    public MotionDetector getDetector() {
-        return detector;
     }
 
     public void startAndWait() {

@@ -5,6 +5,14 @@
 #    type: http
 #    port: 8080
 
+areaThreshold: 3
+
+pixelDifferentThreshold: 26
+
+imageWidth: 640
+
+imageHeight: 480
+
 server:
 #  softNofileLimit: 1000
 #  hardNofileLimit: 1000

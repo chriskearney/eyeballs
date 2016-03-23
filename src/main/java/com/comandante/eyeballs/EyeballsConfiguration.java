@@ -8,6 +8,12 @@ import javax.validation.constraints.NotNull;
 public class EyeballsConfiguration extends Configuration {
 
     @NotNull
+    private double areaThreshold = 3;
+
+    @NotNull
+    private int pixelDifferentThreshold = 26;
+
+    @NotNull
     private int imageWidth = 640;
 
     @NotNull
@@ -29,5 +35,15 @@ public class EyeballsConfiguration extends Configuration {
     @JsonProperty
     public String getLocalStorageDirectory() {
         return localStorageDirectory;
+    }
+
+    @JsonProperty
+    public double getAreaThreshold() {
+        return areaThreshold;
+    }
+
+    @JsonProperty
+    public int getPixelDifferentThreshold() {
+        return pixelDifferentThreshold;
     }
 }
