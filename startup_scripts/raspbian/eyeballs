@@ -1,0 +1,96 @@
+#! /bin/sh
+#
+# chkconfig: 2345 90 10
+# description:  eyeballs daemon
+
+### BEGIN INIT INFO
+# Provides:             eyeballs
+# Required-Start:       $remote_fs $syslog
+# Required-Stop:        $remote_fs $syslog
+# Default-Start:        2 3 4 5
+# Default-Stop:
+# Short-Description:    Eyeballs Motion Detection Service
+### END INIT INFO
+
+
+. /lib/lsb/init-functions
+
+# You will probably want to change only two following lines.
+BASEDIR="/home/fibs/apps/eyeballs"
+USER="root"
+
+PROG="eyeballs"
+CMD="java -jar eyeballs-1.0-SNAPSHOT.jar server eyeballs.yaml"
+PIDFILE="${BASEDIR}/eyeballs.pid"
+RETVAL=0
+
+start () {
+    echo -n $"Starting ${PROG}"
+    if ( [ -f ${PIDFILE} ] )
+    then
+        echo -n "${PROG} is already running."
+        failure ; echo
+        RETVAL=1
+        return
+    fi
+    touch ${PIDFILE} ; chown ${USER} ${PIDFILE}
+    runuser ${USER} -c "cd ${BASEDIR}
+    ${CMD} > /dev/null &
+    echo \$! > ${PIDFILE}"
+    success ; echo
+}
+
+stop () {
+    echo -n $"Stopping ${PROG}"
+    if ( [ ! -f ${PIDFILE} ] )
+    then
+        echo -n "${PROG} is not running."
+        failure ; echo
+        RETVAL=1
+        return
+    fi
+    killproc -p ${PIDFILE}
+    RETVAL=$?
+    echo
+    if [ $RETVAL -eq 0 ] ; then
+        rm -f ${PIDFILE}
+    fi
+}
+
+status () {
+    if ( [ -f ${PIDFILE} ] )
+    then
+        echo -n "${PROG} is running."
+    else
+        echo -n "${PROG} is not running."
+    fi
+    echo
+}
+
+restart () {
+    stop
+    start
+}
+
+
+# See how we were called.
+case "$1" in
+  start)
+    start
+    ;;
+  stop)
+    stop
+    ;;
+  status)
+    status
+    ;;
+  restart)
+    restart
+    ;;
+  *)
+    echo $"Usage: $0 {start|stop}"
+    RETVAL=2
+    ;;
+esac
+
+exit $RETVAL
