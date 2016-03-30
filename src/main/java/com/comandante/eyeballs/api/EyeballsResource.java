@@ -8,6 +8,7 @@ import com.github.sarxos.webcam.Webcam;
 import com.google.common.collect.Lists;
 import io.dropwizard.views.View;
 
+import javax.annotation.security.PermitAll;
 import javax.ws.rs.*;
 import javax.ws.rs.core.*;
 import java.io.IOException;
@@ -28,7 +29,7 @@ public class EyeballsResource {
         this.pictureTakingService = pictureTakingService;
     }
 
-
+    @PermitAll
     @GET
     @Path("/image")
     @Produces("image/png")
@@ -36,6 +37,7 @@ public class EyeballsResource {
         return Response.ok(pictureTakingService.getLatestImage()).build();
     }
 
+    @PermitAll
     @GET
     @Path("/event/recent")
     @Produces(MediaType.APPLICATION_JSON)
@@ -48,6 +50,7 @@ public class EyeballsResource {
         return currentEntries;
     }
 
+    @PermitAll
     @GET
     @Path("/event/{eventId}")
     @Produces("image/jpg")
@@ -60,6 +63,7 @@ public class EyeballsResource {
         return Response.ok(pngImageBytes).build();
     }
 
+    @PermitAll
     @GET
     @Path("/view/recent_events/{num}")
     @Produces(MediaType.TEXT_HTML)
@@ -68,6 +72,7 @@ public class EyeballsResource {
         return new EventsView(database.getRecentEvents(num), uriInfo);
     }
 
+    @PermitAll
     @GET
     @Path("/view/recent_events/")
     @Produces(MediaType.TEXT_HTML)
@@ -76,6 +81,7 @@ public class EyeballsResource {
         return eventsView;
     }
 
+    @PermitAll
     @GET
     @Path("/view/recent_events/image")
     @Produces(MediaType.TEXT_HTML)

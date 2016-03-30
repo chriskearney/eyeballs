@@ -22,6 +22,12 @@ public class EyeballsConfiguration extends Configuration {
     @NotNull
     private String localStorageDirectory = "local_storage";
 
+    @NotNull
+    private String username = "admin";
+
+    @NotNull
+    private String password = "password";
+
     @JsonProperty
     public int getImageWidth() {
         return imageWidth;
@@ -45,5 +51,15 @@ public class EyeballsConfiguration extends Configuration {
     @JsonProperty
     public int getPixelDifferentThreshold() {
         return pixelDifferentThreshold;
+    }
+
+    @JsonProperty
+    public String getUsername() {
+        return username;
+    }
+
+    @JsonProperty
+    public String getPassword() {
+        return password;
     }
 }

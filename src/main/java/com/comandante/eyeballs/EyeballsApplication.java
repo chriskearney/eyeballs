@@ -1,5 +1,6 @@
 package com.comandante.eyeballs;
 
+import com.comandante.eyeballs.api.BasicAuthenticator;
 import com.comandante.eyeballs.api.EyeballsResource;
 import com.comandante.eyeballs.camera.PictureTakingService;
 import com.comandante.eyeballs.camera.SaveMotionDetectedListener;
@@ -8,6 +9,8 @@ import com.comandante.eyeballs.storage.LocalEventDatabase;
 import com.github.sarxos.webcam.Webcam;
 import com.google.common.io.Files;
 import io.dropwizard.Application;
+import io.dropwizard.auth.AuthDynamicFeature;
+import io.dropwizard.auth.basic.BasicCredentialAuthFilter;
 import io.dropwizard.setup.Bootstrap;
 import io.dropwizard.setup.Environment;
 import io.dropwizard.views.ViewBundle;
@@ -48,6 +51,13 @@ public class EyeballsApplication extends Application<EyeballsConfiguration> {
 
     @Override
     public void run(EyeballsConfiguration eyeballsConfiguration, Environment environment) throws Exception {
+
+        environment.jersey().register(new AuthDynamicFeature(
+                new BasicCredentialAuthFilter.Builder<BasicAuthenticator.EyeballUser>()
+                        .setAuthenticator(new BasicAuthenticator(eyeballsConfiguration))
+                        //.setAuthorizer(new ExampleAuthorizer())
+                        .setRealm("Eyeballs Motion Detection Server")
+                        .buildAuthFilter()));
 
         Webcam webcam = Webcam.getDefault();
         if (webcam == null) {
