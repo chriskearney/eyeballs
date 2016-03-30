@@ -52,12 +52,13 @@ public class EyeballsApplication extends Application<EyeballsConfiguration> {
     @Override
     public void run(EyeballsConfiguration eyeballsConfiguration, Environment environment) throws Exception {
 
-        environment.jersey().register(new AuthDynamicFeature(
-                new BasicCredentialAuthFilter.Builder<BasicAuthenticator.EyeballUser>()
-                        .setAuthenticator(new BasicAuthenticator(eyeballsConfiguration))
-                        //.setAuthorizer(new ExampleAuthorizer())
-                        .setRealm("Eyeballs Motion Detection Server")
-                        .buildAuthFilter()));
+        if (eyeballsConfiguration.getUseAuth()) {
+            environment.jersey().register(new AuthDynamicFeature(
+                    new BasicCredentialAuthFilter.Builder<BasicAuthenticator.EyeballUser>()
+                            .setAuthenticator(new BasicAuthenticator(eyeballsConfiguration))
+                            .setRealm("Eyeballs Motion Detection Server")
+                            .buildAuthFilter()));
+        }
 
         Webcam webcam = Webcam.getDefault();
         if (webcam == null) {

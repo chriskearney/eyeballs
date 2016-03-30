@@ -28,6 +28,9 @@ public class EyeballsConfiguration extends Configuration {
     @NotNull
     private String password = "password";
 
+    @NotNull
+    private Boolean useAuth = Boolean.FALSE;
+
     @JsonProperty
     public int getImageWidth() {
         return imageWidth;
@@ -61,5 +64,10 @@ public class EyeballsConfiguration extends Configuration {
     @JsonProperty
     public String getPassword() {
         return password;
+    }
+
+    @JsonProperty
+    public Boolean getUseAuth() {
+        return useAuth;
     }
 }
