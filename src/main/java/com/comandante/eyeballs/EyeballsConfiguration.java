@@ -31,6 +31,36 @@ public class EyeballsConfiguration extends Configuration {
     @NotNull
     private Boolean useAuth = Boolean.FALSE;
 
+    private String sftpDestinationHost;
+
+    private String sftpUsername;
+
+    private String sftpPrivateKey;
+
+    private String sftpDestinationDirectory;
+
+    private int sftpRemotePort = 22;
+
+    @JsonProperty
+    public int getSftpRemotePort() {
+        return sftpRemotePort;
+    }
+
+    @JsonProperty
+    public String getSftpDestinationDirectory() {
+        return sftpDestinationDirectory;
+    }
+
+    @JsonProperty
+    public String getSftpDestinationHost() {
+        return sftpDestinationHost;
+    }
+
+    @JsonProperty
+    public String getSftpUsername() {
+        return sftpUsername;
+    }
+
     @JsonProperty
     public int getImageWidth() {
         return imageWidth;

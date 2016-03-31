@@ -4,9 +4,9 @@ import java.util.Date;
 
 public class LocalEvent {
 
-    private String id;
-    private Date timestamp;
-    private byte[] image;
+    private final String id;
+    private final Date timestamp;
+    private final byte[] image;
 
     public LocalEvent(String id, Date timestamp, byte[] imageData) {
         this.id = id;
@@ -24,9 +24,5 @@ public class LocalEvent {
 
     public byte[] getImage() {
         return image;
-    }
-
-    public void setImage(byte[] image) {
-        this.image = image;
     }
 }

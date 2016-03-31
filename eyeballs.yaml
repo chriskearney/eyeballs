@@ -1,23 +1,17 @@
-# use the simple server factory if you only want to run on a single port
-#server:
-#  type: simple
-#  connector:
-#    type: http
-#    port: 8080
-
 areaThreshold: 3
-
 pixelDifferentThreshold: 26
 
 imageWidth: 640
-
 imageHeight: 480
 
 useAuth: false
-
 username: admin
-
 password: password
+
+sftpDestinationHost: ktwit.net
+sftpUsername: fibs
+sftpDestinationDirectory: /home/fibs/motion_events/
+sftpRemotePort: 443
 
 server:
 #  softNofileLimit: 1000

@@ -6,7 +6,9 @@ import com.comandante.eyeballs.camera.PictureTakingService;
 import com.comandante.eyeballs.camera.SaveMotionDetectedListener;
 import com.comandante.eyeballs.camera.MotionDetectionService;
 import com.comandante.eyeballs.storage.LocalEventDatabase;
+import com.comandante.eyeballs.storage.SftpImageWriteService;
 import com.github.sarxos.webcam.Webcam;
+import com.google.common.collect.Lists;
 import com.google.common.io.Files;
 import io.dropwizard.Application;
 import io.dropwizard.auth.AuthDynamicFeature;
@@ -79,7 +81,10 @@ public class EyeballsApplication extends Application<EyeballsConfiguration> {
                 .closeOnJvmShutdown()
                 .make();
 
-        LocalEventDatabase eyeballsMotionEventDatabase = new LocalEventDatabase(db, eyeballsConfiguration);
+        SftpImageWriteService sftpImageWriteService = new SftpImageWriteService(eyeballsConfiguration);
+        sftpImageWriteService.startAsync();
+
+        LocalEventDatabase eyeballsMotionEventDatabase = new LocalEventDatabase(db, eyeballsConfiguration, Lists.newArrayList(sftpImageWriteService));
 
         MotionDetectionService motionDetectionService = new MotionDetectionService(eyeballsConfiguration,
                 new SaveMotionDetectedListener(eyeballsMotionEventDatabase));

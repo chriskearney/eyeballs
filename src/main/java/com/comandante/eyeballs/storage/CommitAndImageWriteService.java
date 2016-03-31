@@ -1,9 +1,9 @@
 package com.comandante.eyeballs.storage;
 
-import com.comandante.eyeballs.common.ConcurrentDateFormatAccess;
 import com.comandante.eyeballs.EyeballsConfiguration;
-import com.comandante.eyeballs.model.LocalEvent;
 import com.comandante.eyeballs.camera.SaveMotionDetectedListener;
+import com.comandante.eyeballs.common.ConcurrentDateFormatAccess;
+import com.comandante.eyeballs.model.LocalEvent;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.io.Files;
@@ -14,13 +14,14 @@ import org.mapdb.DB;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.ByteBuffer;
 import java.text.ParseException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Optional;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 
-public class CommitAndImageWriteService extends AbstractScheduledService {
+public class CommitAndImageWriteService extends AbstractScheduledService implements MotionEventPersistence {
 
     private final LinkedBlockingQueue<LocalEvent> events = new LinkedBlockingQueue<LocalEvent>();
     private final BTreeMap<String, LocalEvent> motionEventStore;
@@ -42,8 +43,7 @@ public class CommitAndImageWriteService extends AbstractScheduledService {
         HashMap<String, LocalEvent> flushMap = Maps.newHashMap();
         for (LocalEvent e: flush) {
             writeImageToDisk(e);
-            e.setImage(null);
-            flushMap.put(e.getId(), e);
+            flushMap.put(e.getId(), new LocalEvent(e.getId(), e.getTimestamp(), null));
         }
         motionEventStore.putAll(flushMap);
         db.commit();
@@ -65,22 +65,24 @@ public class CommitAndImageWriteService extends AbstractScheduledService {
         Files.write(localEvent.getImage(), outputImageFile);
     }
 
-    private void readImageFromDisk(LocalEvent localEvent) throws IOException, ParseException {
+    private byte[] readImageFromDisk(LocalEvent localEvent) throws IOException, ParseException {
         String day = concurrentDateFormatAccess.convertDateToString(localEvent.getTimestamp());
         File inputImageFile = new File(eyeballsConfiguration.getLocalStorageDirectory() + "/event_images/" + day + "/" + localEvent.getId() + ".jpg");
-        localEvent.setImage(Files.toByteArray(inputImageFile));
+        return Files.toByteArray(inputImageFile);
     }
 
     public Optional<LocalEvent> getEvent(String id) {
         LocalEvent localEvent = motionEventStore.get(id);
+        LocalEvent retLocalEvent = null;
         if (localEvent == null) {
             return Optional.empty();
         }
         try {
-            readImageFromDisk(localEvent);
+            byte[] bytes = readImageFromDisk(localEvent);
+            retLocalEvent = new LocalEvent(localEvent.getId(), localEvent.getTimestamp(), bytes);
         } catch (Exception e) {
             log.error("Unable to retrieve motion event image from disk store.", e);
         }
-        return Optional.of(localEvent);
+        return Optional.ofNullable(retLocalEvent);
     }
 }

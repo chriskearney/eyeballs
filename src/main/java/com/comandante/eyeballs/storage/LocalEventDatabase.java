@@ -15,20 +15,24 @@ public class LocalEventDatabase {
 
     private final BTreeMap<String, LocalEvent> motionEventStore;
     private final CommitAndImageWriteService commitAndImageWriteService;
-    private final EyeballsConfiguration eyeballsConfiguration;
+    private final List<MotionEventPersistence> motionEventPersistences;
 
-    public LocalEventDatabase(DB db, EyeballsConfiguration eyeballsConfiguration) {
-        this.eyeballsConfiguration = eyeballsConfiguration;
+    public LocalEventDatabase(DB db, EyeballsConfiguration eyeballsConfiguration, List<MotionEventPersistence> motionEventPersistences) {
         this.motionEventStore = db
                 .createTreeMap("motionEventStore")
                 .valueSerializer(new LocalEventSerializer())
                 .makeOrGet();
         this.commitAndImageWriteService = new CommitAndImageWriteService(motionEventStore, db, eyeballsConfiguration);
         commitAndImageWriteService.startAsync();
+        this.motionEventPersistences = Lists.newArrayList();
+        this.motionEventPersistences.add(commitAndImageWriteService);
+        this.motionEventPersistences.addAll(motionEventPersistences);
     }
 
     public void save(LocalEvent event) {
-        commitAndImageWriteService.add(event);
+        for (MotionEventPersistence motionEventPersistence: motionEventPersistences) {
+            motionEventPersistence.add(event);
+        }
     }
 
     public Optional<LocalEvent> getEvent(String id) {

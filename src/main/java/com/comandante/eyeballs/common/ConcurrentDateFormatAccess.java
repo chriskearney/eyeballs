@@ -10,7 +10,7 @@ public class ConcurrentDateFormatAccess {
     private ThreadLocal<DateFormat> df = new ThreadLocal<DateFormat>() {
         @Override
         protected DateFormat initialValue() {
-            return new SimpleDateFormat("dd-M-yyyy");
+            return new SimpleDateFormat("M-dd-yyyy");
         }
 
         @Override
