@@ -5,11 +5,12 @@ import com.comandante.eyeballs.camera.SaveMotionDetectedListener;
 import com.comandante.eyeballs.common.ConcurrentDateFormatAccess;
 import com.comandante.eyeballs.model.LocalEventSerializer;
 import com.comandante.eyeballs.model.MotionEvent;
+import com.comandante.eyeballs.motion_events.MotionEventPersistence;
+import com.comandante.eyeballs.motion_events.MotionEventConsumer;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.io.Files;
 import com.google.common.util.concurrent.AbstractScheduledService;
-import com.comandante.eyeballs.motion_events.consumers.MotionEventConsumer;
 import org.apache.log4j.Logger;
 import org.mapdb.BTreeMap;
 import org.mapdb.DB;
@@ -23,7 +24,7 @@ import java.util.Optional;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 
-public class LocalFSMotionEventConsumer extends AbstractScheduledService implements MotionEventConsumer {
+public class LocalFSMotionEventConsumer extends AbstractScheduledService implements MotionEventConsumer, MotionEventPersistence {
 
     private final LinkedBlockingQueue<MotionEvent> events = new LinkedBlockingQueue<MotionEvent>();
     private final BTreeMap<String, MotionEvent> motionEventStore;
@@ -54,13 +55,28 @@ public class LocalFSMotionEventConsumer extends AbstractScheduledService impleme
         db.commit();
     }
 
-    @Override
-    protected Scheduler scheduler() {
-        return Scheduler.newFixedRateSchedule(1, 5, TimeUnit.SECONDS);
-    }
-
     public void add(MotionEvent e) {
         this.events.add(e);
+    }
+
+    @Override
+    public Optional<MotionEvent> getEvent(String id) {
+        MotionEvent motionEvent = motionEventStore.get(id);
+        MotionEvent retMotionEvent = null;
+        if (motionEvent == null) {
+            return Optional.empty();
+        }
+        try {
+            byte[] bytes = readImageFromDisk(motionEvent);
+            retMotionEvent = new MotionEvent(motionEvent.getId(), motionEvent.getTimestamp(), bytes);
+        } catch (Exception e) {
+            log.error("Unable to retrieve motion event image from disk store.", e);
+        }
+        return Optional.ofNullable(retMotionEvent);
+    }
+
+    public BTreeMap<String, MotionEvent> getMotionEventStore() {
+        return motionEventStore;
     }
 
     private void writeImageToDisk(MotionEvent motionEvent) throws IOException, ParseException {
@@ -76,18 +92,8 @@ public class LocalFSMotionEventConsumer extends AbstractScheduledService impleme
         return Files.toByteArray(inputImageFile);
     }
 
-    public Optional<MotionEvent> getEvent(String id) {
-        MotionEvent motionEvent = motionEventStore.get(id);
-        MotionEvent retMotionEvent = null;
-        if (motionEvent == null) {
-            return Optional.empty();
-        }
-        try {
-            byte[] bytes = readImageFromDisk(motionEvent);
-            retMotionEvent = new MotionEvent(motionEvent.getId(), motionEvent.getTimestamp(), bytes);
-        } catch (Exception e) {
-            log.error("Unable to retrieve motion event image from disk store.", e);
-        }
-        return Optional.ofNullable(retMotionEvent);
+    @Override
+    protected Scheduler scheduler() {
+        return Scheduler.newFixedRateSchedule(1, 5, TimeUnit.SECONDS);
     }
 }

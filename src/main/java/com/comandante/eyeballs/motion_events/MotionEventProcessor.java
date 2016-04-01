@@ -1,28 +1,21 @@
 package com.comandante.eyeballs.motion_events;
 
 import com.comandante.eyeballs.model.MotionEvent;
-import com.comandante.eyeballs.model.LocalEventSerializer;
 import com.comandante.eyeballs.motion_events.consumers.local_fs.LocalFSMotionEventConsumer;
-import com.comandante.eyeballs.motion_events.consumers.MotionEventConsumer;
 import com.google.common.collect.Lists;
-import org.mapdb.BTreeMap;
-import org.mapdb.DB;
+import com.google.common.util.concurrent.AbstractScheduledService;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentNavigableMap;
 
 public class MotionEventProcessor {
 
-    private final BTreeMap<String, MotionEvent> motionEventStore;
     private final Optional<LocalFSMotionEventConsumer> localFSMotionEventConsumer;
     private final List<MotionEventConsumer> motionEventConsumers;
 
-    public MotionEventProcessor(DB db, List<MotionEventConsumer> motionEventConsumers) {
-        this.motionEventStore = db
-                .createTreeMap("motionEventStore")
-                .valueSerializer(new LocalEventSerializer())
-                .makeOrGet();
-        this.localFSMotionEventConsumer = getLocalFSMotionEventConsumer(motionEventConsumers);
+    private MotionEventProcessor(Optional<LocalFSMotionEventConsumer> localFSMotionEventConsumer,
+                                 List<MotionEventConsumer> motionEventConsumers) {
+        this.localFSMotionEventConsumer = localFSMotionEventConsumer;
         this.motionEventConsumers = Lists.newArrayList();
         this.motionEventConsumers.addAll(motionEventConsumers);
     }
@@ -45,7 +38,8 @@ public class MotionEventProcessor {
         if (!localFSMotionEventConsumer.isPresent()) {
             return events;
         }
-        ConcurrentNavigableMap<String, MotionEvent> stringLocalEventConcurrentNavigableMap = motionEventStore.descendingMap();
+        ConcurrentNavigableMap<String, MotionEvent> stringLocalEventConcurrentNavigableMap =
+                localFSMotionEventConsumer.get().getMotionEventStore().descendingMap();
         Set<Map.Entry<String, MotionEvent>> entries = stringLocalEventConcurrentNavigableMap.entrySet();
         int i = 0;
         for (Map.Entry<String, MotionEvent> event : entries) {
@@ -58,13 +52,26 @@ public class MotionEventProcessor {
         return events;
     }
 
-    private static Optional<LocalFSMotionEventConsumer> getLocalFSMotionEventConsumer(List<MotionEventConsumer> motionEventConsumers) {
-        LocalFSMotionEventConsumer localFSMotionEventConsumer = null;
-        for (MotionEventConsumer motionEventConsumer: motionEventConsumers) {
+    public static class Builder {
+        private List<MotionEventConsumer> motionEventConsumers = Lists.newArrayList();
+        private LocalFSMotionEventConsumer localFSMotionEventConsumer;
+
+        public Builder addMotionEventConsumer(MotionEventConsumer motionEventConsumer) {
+            if (motionEventConsumer instanceof AbstractScheduledService) {
+                AbstractScheduledService consumer = (AbstractScheduledService) motionEventConsumer;
+                if (!consumer.isRunning()) {
+                    consumer.startAsync();
+                }
+            }
             if (motionEventConsumer instanceof LocalFSMotionEventConsumer) {
                 localFSMotionEventConsumer = (LocalFSMotionEventConsumer) motionEventConsumer;
             }
+            this.motionEventConsumers.add(motionEventConsumer);
+            return this;
         }
-        return Optional.ofNullable(localFSMotionEventConsumer);
+
+        public MotionEventProcessor build() {
+            return new MotionEventProcessor(Optional.ofNullable(localFSMotionEventConsumer), motionEventConsumers);
+        }
     }
 }

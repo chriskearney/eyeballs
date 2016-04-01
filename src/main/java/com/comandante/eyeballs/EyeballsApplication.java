@@ -7,11 +7,9 @@ import com.comandante.eyeballs.camera.SaveMotionDetectedListener;
 import com.comandante.eyeballs.camera.MotionDetectionService;
 import com.comandante.eyeballs.motion_events.consumers.dropbox.DropboxMotionEventConsumer;
 import com.comandante.eyeballs.motion_events.MotionEventProcessor;
-import com.comandante.eyeballs.motion_events.consumers.MotionEventConsumer;
 import com.comandante.eyeballs.motion_events.consumers.local_fs.LocalFSMotionEventConsumer;
 import com.comandante.eyeballs.motion_events.consumers.sftp.SftpMotionEventConsumer;
 import com.github.sarxos.webcam.Webcam;
-import com.google.common.collect.Lists;
 import com.google.common.io.Files;
 import io.dropwizard.Application;
 import io.dropwizard.auth.AuthDynamicFeature;
@@ -24,7 +22,7 @@ import org.mapdb.DBMaker;
 
 import java.awt.*;
 import java.io.File;
-import java.util.List;
+import java.io.IOException;
 
 // For this webcam library to work on ARM you need
 // mvn install:install-file -Dfile=./bridj-0.7-20140918.jar -DgroupId=com.nativelibs4java -DartifactId=bridj -Dversion=0.7-20140918 -Dpackaging=jar
@@ -77,33 +75,23 @@ public class EyeballsApplication extends Application<EyeballsConfiguration> {
         webcam.setViewSize(new Dimension(eyeballsConfiguration.getImageWidth(), eyeballsConfiguration.getImageHeight()));
         webcam.open();
 
-        File file = new File(eyeballsConfiguration.getLocalStorageDirectory() + "/event_database");
-        Files.createParentDirs(file);
 
-        DB db = DBMaker.newFileDB(
-                new File(eyeballsConfiguration.getLocalStorageDirectory() + "/event_database"))
-                .closeOnJvmShutdown()
-                .make();
+        MotionEventProcessor.Builder processorBuilder = new MotionEventProcessor.Builder();
 
-        List<MotionEventConsumer> motionEventConsumers = Lists.newArrayList();
         if (eyeballsConfiguration.getUseSftp()) {
-            SftpMotionEventConsumer sftpMotionEventConsumer = new SftpMotionEventConsumer(eyeballsConfiguration);
-            sftpMotionEventConsumer.startAsync();
-            motionEventConsumers.add(sftpMotionEventConsumer);
-
+            processorBuilder.addMotionEventConsumer(new SftpMotionEventConsumer(eyeballsConfiguration));
         }
 
         if (eyeballsConfiguration.getUseDropbox()) {
-            DropboxMotionEventConsumer dropboxMotionEventConsumer = new DropboxMotionEventConsumer(eyeballsConfiguration);
-            dropboxMotionEventConsumer.startAsync();
-            motionEventConsumers.add(dropboxMotionEventConsumer);
+            processorBuilder.addMotionEventConsumer(new DropboxMotionEventConsumer(eyeballsConfiguration));
         }
 
-        LocalFSMotionEventConsumer localFSMotionEventConsumer = new LocalFSMotionEventConsumer(db, eyeballsConfiguration);
-        localFSMotionEventConsumer.startAsync();
-        motionEventConsumers.add(localFSMotionEventConsumer);
+        if (eyeballsConfiguration.getUseLocalStorage()) {
+            createUnderylingStorageDirectories(eyeballsConfiguration);
+            processorBuilder.addMotionEventConsumer(new LocalFSMotionEventConsumer(buildMapDb(eyeballsConfiguration), eyeballsConfiguration));
+        }
 
-        MotionEventProcessor motionEventProcessor = new MotionEventProcessor(db, motionEventConsumers);
+        MotionEventProcessor motionEventProcessor = processorBuilder.build();
 
         MotionDetectionService motionDetectionService = new MotionDetectionService(eyeballsConfiguration,
                 new SaveMotionDetectedListener(motionEventProcessor));
@@ -112,5 +100,16 @@ public class EyeballsApplication extends Application<EyeballsConfiguration> {
         EyeballsResource eyeballsResource = new EyeballsResource(webcam, motionEventProcessor, pictureTakingService);
 
         environment.jersey().register(eyeballsResource);
+    }
+
+    private static void createUnderylingStorageDirectories(EyeballsConfiguration eyeballsConfiguration) throws IOException {
+        File file = new File(eyeballsConfiguration.getLocalStorageDirectory() + "/event_database");
+        Files.createParentDirs(file);
+    }
+
+    private static DB buildMapDb(EyeballsConfiguration eyeballsConfiguration) {
+        return DBMaker.newFileDB(new File(eyeballsConfiguration.getLocalStorageDirectory() + "/event_database"))
+                .closeOnJvmShutdown()
+                .make();
     }
 }

@@ -3,7 +3,7 @@ package com.comandante.eyeballs.motion_events.consumers.sftp;
 import com.comandante.eyeballs.EyeballsConfiguration;
 import com.comandante.eyeballs.common.ConcurrentDateFormatAccess;
 import com.comandante.eyeballs.model.MotionEvent;
-import com.comandante.eyeballs.motion_events.consumers.MotionEventConsumer;
+import com.comandante.eyeballs.motion_events.MotionEventConsumer;
 import com.google.common.collect.Lists;
 import com.google.common.util.concurrent.AbstractScheduledService;
 import net.schmizz.sshj.SSHClient;

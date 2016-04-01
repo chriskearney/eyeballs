@@ -9,7 +9,7 @@ import com.dropbox.core.v2.files.FileMetadata;
 import com.dropbox.core.v2.files.WriteMode;
 import com.google.common.collect.Lists;
 import com.google.common.util.concurrent.AbstractScheduledService;
-import com.comandante.eyeballs.motion_events.consumers.MotionEventConsumer;
+import com.comandante.eyeballs.motion_events.MotionEventConsumer;
 import org.apache.log4j.Logger;
 
 import java.io.ByteArrayInputStream;

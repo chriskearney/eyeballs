@@ -43,9 +43,17 @@ public class EyeballsConfiguration extends Configuration {
     private int sftpRemotePort = 22;
 
     @NotNull
+    private Boolean useLocalStorage = Boolean.TRUE;
+
+    @NotNull
     private Boolean useDropbox = Boolean.FALSE;
 
     private String dropBoxAccessToken;
+
+    @JsonProperty
+    public Boolean getUseLocalStorage() {
+        return useLocalStorage;
+    }
 
     @JsonProperty
     public String getDropBoxAccessToken() {
