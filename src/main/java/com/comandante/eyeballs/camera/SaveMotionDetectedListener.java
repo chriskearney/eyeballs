@@ -1,8 +1,8 @@
 package com.comandante.eyeballs.camera;
 
 import com.comandante.eyeballs.common.ImageFormatting;
-import com.comandante.eyeballs.model.LocalEvent;
-import com.comandante.eyeballs.storage.LocalEventDatabase;
+import com.comandante.eyeballs.model.MotionEvent;
+import com.comandante.eyeballs.motion_events.MotionEventProcessor;
 import org.apache.log4j.Logger;
 
 import javax.imageio.ImageIO;
@@ -15,10 +15,10 @@ import java.util.Date;
 import java.util.UUID;
 
 public class SaveMotionDetectedListener implements MotionDetectedListener {
-    private final LocalEventDatabase eyeballsMotionEventDatabase;
+    private final MotionEventProcessor eyeballsMotionEventDatabase;
     private static Logger log = Logger.getLogger(SaveMotionDetectedListener.class.getName());
 
-    public SaveMotionDetectedListener(LocalEventDatabase eyeballsMotionEventDatabase) {
+    public SaveMotionDetectedListener(MotionEventProcessor eyeballsMotionEventDatabase) {
         this.eyeballsMotionEventDatabase = eyeballsMotionEventDatabase;
     }
 
@@ -34,7 +34,7 @@ public class SaveMotionDetectedListener implements MotionDetectedListener {
             log.error("Unable to write image.", e);
         }
         byte[] imageData = baos.toByteArray();
-        eyeballsMotionEventDatabase.save(new LocalEvent(timestamp.getTime() + "." + convertUUIDtoBase64(), timestamp, imageData));
+        eyeballsMotionEventDatabase.save(new MotionEvent(timestamp.getTime() + "." + convertUUIDtoBase64(), timestamp, imageData));
         log.info("Motion Event Detected of Strength: " + wme.getArea());
     }
 

@@ -34,13 +34,14 @@ public class DropwizardToken {
         System.out.println("1. Go to: " + authorizeUrl);
         System.out.println("2. Click \"Allow\" (you might have to log in first)");
         System.out.println("3. Copy the authorization code.");
+        System.out.printf("4. Paste the code and hit the ENTER key: ");
         String code = new BufferedReader(new InputStreamReader(System.in)).readLine().trim();
 
         // This will fail if the user enters an invalid authorization code.
         DbxAuthFinish authFinish = webAuth.finish(code);
         String accessToken = authFinish.getAccessToken();
+        System.out.println("Store this token in your eyeballs.yaml file.");
         System.out.println("\r\n ACCESS TOKEN: " + accessToken);
-        System.out.println("Save " + accessToken + " in the eyeballs.yaml file as dropboxAccessToken");
     }
 
     private static void printHelp() {

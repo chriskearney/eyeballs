@@ -12,3 +12,4 @@ creeperDb*
 *.log
 release.properties
 local_storage/
+eyeballs-private.yaml

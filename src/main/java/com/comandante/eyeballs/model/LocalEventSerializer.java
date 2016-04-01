@@ -8,7 +8,7 @@ import java.io.DataOutput;
 import java.io.IOException;
 import java.io.Serializable;
 
-public class LocalEventSerializer implements Serializer<LocalEvent>, Serializable {
+public class LocalEventSerializer implements Serializer<MotionEvent>, Serializable {
 
     @Override
     public int fixedSize() {
@@ -16,13 +16,13 @@ public class LocalEventSerializer implements Serializer<LocalEvent>, Serializabl
     }
 
     @Override
-    public void serialize(DataOutput dataOutput, LocalEvent localEvent) throws IOException {
-        dataOutput.writeUTF(new GsonBuilder().create().toJson(localEvent, LocalEvent.class));
+    public void serialize(DataOutput dataOutput, MotionEvent motionEvent) throws IOException {
+        dataOutput.writeUTF(new GsonBuilder().create().toJson(motionEvent, MotionEvent.class));
     }
 
     @Override
-    public LocalEvent deserialize(DataInput dataInput, int i) throws IOException {
-        return new GsonBuilder().create().fromJson(dataInput.readUTF(), LocalEvent.class);
+    public MotionEvent deserialize(DataInput dataInput, int i) throws IOException {
+        return new GsonBuilder().create().fromJson(dataInput.readUTF(), MotionEvent.class);
     }
 
 }

@@ -1,4 +1,4 @@
-package com.comandante.eyeballs.storage;
+package com.comandante.eyeballs.motion_events.consumers.sftp;
 
 import net.schmizz.sshj.xfer.InMemorySourceFile;
 

@@ -5,10 +5,11 @@ import com.comandante.eyeballs.api.EyeballsResource;
 import com.comandante.eyeballs.camera.PictureTakingService;
 import com.comandante.eyeballs.camera.SaveMotionDetectedListener;
 import com.comandante.eyeballs.camera.MotionDetectionService;
-import com.comandante.eyeballs.storage.DropboxImageWriteService;
-import com.comandante.eyeballs.storage.LocalEventDatabase;
-import com.comandante.eyeballs.storage.MotionEventPersistence;
-import com.comandante.eyeballs.storage.SftpImageWriteService;
+import com.comandante.eyeballs.motion_events.consumers.dropbox.DropboxMotionEventConsumer;
+import com.comandante.eyeballs.motion_events.MotionEventProcessor;
+import com.comandante.eyeballs.motion_events.consumers.MotionEventConsumer;
+import com.comandante.eyeballs.motion_events.consumers.local_fs.LocalFSMotionEventConsumer;
+import com.comandante.eyeballs.motion_events.consumers.sftp.SftpMotionEventConsumer;
 import com.github.sarxos.webcam.Webcam;
 import com.google.common.collect.Lists;
 import com.google.common.io.Files;
@@ -84,27 +85,31 @@ public class EyeballsApplication extends Application<EyeballsConfiguration> {
                 .closeOnJvmShutdown()
                 .make();
 
-        List<MotionEventPersistence> persisters = Lists.newArrayList();
+        List<MotionEventConsumer> motionEventConsumers = Lists.newArrayList();
         if (eyeballsConfiguration.getUseSftp()) {
-            SftpImageWriteService sftpImageWriteService = new SftpImageWriteService(eyeballsConfiguration);
-            sftpImageWriteService.startAsync();
-            persisters.add(sftpImageWriteService);
+            SftpMotionEventConsumer sftpMotionEventConsumer = new SftpMotionEventConsumer(eyeballsConfiguration);
+            sftpMotionEventConsumer.startAsync();
+            motionEventConsumers.add(sftpMotionEventConsumer);
 
         }
 
         if (eyeballsConfiguration.getUseDropbox()) {
-            DropboxImageWriteService dropboxImageWriteService = new DropboxImageWriteService(eyeballsConfiguration);
-            dropboxImageWriteService.startAsync();
-            persisters.add(dropboxImageWriteService);
+            DropboxMotionEventConsumer dropboxMotionEventConsumer = new DropboxMotionEventConsumer(eyeballsConfiguration);
+            dropboxMotionEventConsumer.startAsync();
+            motionEventConsumers.add(dropboxMotionEventConsumer);
         }
 
-        LocalEventDatabase eyeballsMotionEventDatabase = new LocalEventDatabase(db, eyeballsConfiguration, persisters);
+        LocalFSMotionEventConsumer localFSMotionEventConsumer = new LocalFSMotionEventConsumer(db, eyeballsConfiguration);
+        localFSMotionEventConsumer.startAsync();
+        motionEventConsumers.add(localFSMotionEventConsumer);
+
+        MotionEventProcessor motionEventProcessor = new MotionEventProcessor(db, motionEventConsumers);
 
         MotionDetectionService motionDetectionService = new MotionDetectionService(eyeballsConfiguration,
-                new SaveMotionDetectedListener(eyeballsMotionEventDatabase));
+                new SaveMotionDetectedListener(motionEventProcessor));
         motionDetectionService.startAndWait();
 
-        EyeballsResource eyeballsResource = new EyeballsResource(webcam, eyeballsMotionEventDatabase, pictureTakingService);
+        EyeballsResource eyeballsResource = new EyeballsResource(webcam, motionEventProcessor, pictureTakingService);
 
         environment.jersey().register(eyeballsResource);
     }

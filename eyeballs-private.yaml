@@ -15,7 +15,7 @@ sftpDestinationDirectory: /home/eyeballs/camera
 sftpRemotePort: 22
 
 useDropbox: true
-dropBoxAccessToken:
+dropBoxAccessToken: 9GTCxZPY3EoAAAAAAAAJunmDvKTvd4PQtd9d8gJ3g-a0gqCFzEcDMIEOPSuu4F5f
 
 server:
   applicationConnectors:

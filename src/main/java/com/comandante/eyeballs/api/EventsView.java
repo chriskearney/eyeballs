@@ -1,11 +1,8 @@
 package com.comandante.eyeballs.api;
 
-import com.comandante.eyeballs.model.LocalEvent;
-import com.comandante.eyeballs.storage.LocalEventDatabase;
-import com.google.common.collect.Lists;
+import com.comandante.eyeballs.model.MotionEvent;
 import io.dropwizard.views.View;
 
-import javax.ws.rs.core.UriBuilder;
 import javax.ws.rs.core.UriInfo;
 import java.util.List;
 
@@ -13,11 +10,11 @@ public class EventsView extends View {
 
     private static final String TEMPLATE_NAME = "events.ftl";
 
-    public final List<LocalEvent> events;
+    public final List<MotionEvent> events;
     private final String baseUrl;
     private boolean displayImage = false;
 
-    public EventsView(List<LocalEvent> events, UriInfo uriInfo) {
+    public EventsView(List<MotionEvent> events, UriInfo uriInfo) {
         super(TEMPLATE_NAME);
         this.events = events;
         String url = uriInfo.getBaseUri().toString();
@@ -28,7 +25,7 @@ public class EventsView extends View {
         baseUrl = url;
     }
 
-    public List<LocalEvent> getEvents() {
+    public List<MotionEvent> getEvents() {
         return events;
     }
 

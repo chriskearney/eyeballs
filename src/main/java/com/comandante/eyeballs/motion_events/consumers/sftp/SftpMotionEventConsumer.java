@@ -1,8 +1,9 @@
-package com.comandante.eyeballs.storage;
+package com.comandante.eyeballs.motion_events.consumers.sftp;
 
 import com.comandante.eyeballs.EyeballsConfiguration;
 import com.comandante.eyeballs.common.ConcurrentDateFormatAccess;
-import com.comandante.eyeballs.model.LocalEvent;
+import com.comandante.eyeballs.model.MotionEvent;
+import com.comandante.eyeballs.motion_events.consumers.MotionEventConsumer;
 import com.google.common.collect.Lists;
 import com.google.common.util.concurrent.AbstractScheduledService;
 import net.schmizz.sshj.SSHClient;
@@ -16,31 +17,30 @@ import java.util.List;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 
-public class SftpImageWriteService extends AbstractScheduledService implements MotionEventPersistence {
+public class SftpMotionEventConsumer extends AbstractScheduledService implements MotionEventConsumer {
 
     private final ConcurrentDateFormatAccess concurrentDateFormatAccess = new ConcurrentDateFormatAccess();
-    private final LinkedBlockingQueue<LocalEvent> events = new LinkedBlockingQueue<>();
+    private final LinkedBlockingQueue<MotionEvent> events = new LinkedBlockingQueue<>();
     private final EyeballsConfiguration eyeballsConfiguration;
-    private SSHClient sshClient;
-    private static Logger log = Logger.getLogger(SftpImageWriteService.class.getName());
+    private static Logger log = Logger.getLogger(SftpMotionEventConsumer.class.getName());
 
-    public SftpImageWriteService(EyeballsConfiguration eyeballsConfiguration) {
+    public SftpMotionEventConsumer(EyeballsConfiguration eyeballsConfiguration) {
         this.eyeballsConfiguration = eyeballsConfiguration;
     }
 
     @Override
-    public void add(LocalEvent localEvent) {
-        this.events.add(localEvent);
+    public void add(MotionEvent motionEvent) {
+        this.events.add(motionEvent);
     }
 
     @Override
     protected void runOneIteration() throws Exception {
-        ArrayList<LocalEvent> flush = Lists.newArrayList();
+        ArrayList<MotionEvent> flush = Lists.newArrayList();
         events.drainTo(flush);
         if (flush.size() > 0) {
+            SSHClient sshClient = configureSsh();
             try {
-                configureSsh();
-                transferEvents(flush);
+                transferEvents(sshClient, flush);
             } catch (Exception e) {
                 log.error("Problem uploading motion events via SCP.", e);
             } finally {
@@ -54,21 +54,22 @@ public class SftpImageWriteService extends AbstractScheduledService implements M
         return Scheduler.newFixedRateSchedule(5, 5, TimeUnit.SECONDS);
     }
 
-    private void configureSsh() throws IOException {
-        sshClient = new SSHClient();
+    private SSHClient configureSsh() throws IOException {
+        SSHClient sshClient = new SSHClient();
         sshClient.loadKnownHosts();
         sshClient.connect(eyeballsConfiguration.getSftpDestinationHost(), eyeballsConfiguration.getSftpRemotePort());
         sshClient.authPublickey(eyeballsConfiguration.getSftpUsername());
         sshClient.useCompression();
+        return sshClient;
     }
 
-    private void transferEvents(List<LocalEvent> localEvents) throws IOException, ParseException {
-        for (LocalEvent localEvent : localEvents) {
+    private void transferEvents(SSHClient sshClient, List<MotionEvent> motionEvents) throws IOException, ParseException {
+        for (MotionEvent motionEvent : motionEvents) {
             ByteArraySourceFile byteArraySourceFile = new ByteArraySourceFile.Builder()
-                    .fileData(localEvent.getImage())
-                    .name(localEvent.getId() + ".jpg")
+                    .fileData(motionEvent.getImage())
+                    .name(motionEvent.getId() + ".jpg")
                     .build();
-            String day = concurrentDateFormatAccess.convertDateToString(localEvent.getTimestamp());
+            String day = concurrentDateFormatAccess.convertDateToString(motionEvent.getTimestamp());
             SFTPClient sftpClient = sshClient.newSFTPClient();
             String destinationPath = eyeballsConfiguration.getSftpDestinationDirectory() + "/" + day + "/";
             sftpClient.mkdirs(destinationPath);

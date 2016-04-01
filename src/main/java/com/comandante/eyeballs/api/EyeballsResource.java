@@ -2,8 +2,8 @@ package com.comandante.eyeballs.api;
 
 import com.comandante.eyeballs.camera.PictureTakingService;
 import com.comandante.eyeballs.model.EventsApiResponse;
-import com.comandante.eyeballs.model.LocalEvent;
-import com.comandante.eyeballs.storage.LocalEventDatabase;
+import com.comandante.eyeballs.model.MotionEvent;
+import com.comandante.eyeballs.motion_events.MotionEventProcessor;
 import com.github.sarxos.webcam.Webcam;
 import com.google.common.collect.Lists;
 import io.dropwizard.views.View;
@@ -20,10 +20,10 @@ import java.util.Optional;
 public class EyeballsResource {
 
     private final Webcam webcam;
-    private final LocalEventDatabase database;
+    private final MotionEventProcessor database;
     private final PictureTakingService pictureTakingService;
 
-    public EyeballsResource(Webcam webcam, LocalEventDatabase database, PictureTakingService pictureTakingService) {
+    public EyeballsResource(Webcam webcam, MotionEventProcessor database, PictureTakingService pictureTakingService) {
         this.webcam = webcam;
         this.database = database;
         this.pictureTakingService = pictureTakingService;
@@ -43,7 +43,7 @@ public class EyeballsResource {
     @Produces(MediaType.APPLICATION_JSON)
     public List<EventsApiResponse> getRecentEvents() throws IOException {
         List<EventsApiResponse> currentEntries = Lists.newArrayList();
-        for (LocalEvent next : database.getRecentEvents(10)) {
+        for (MotionEvent next : database.getRecentEvents(10)) {
             currentEntries.add(new EventsApiResponse(next.getId(), next.getTimestamp()));
         }
         Collections.reverse(currentEntries);
@@ -55,7 +55,7 @@ public class EyeballsResource {
     @Path("/event/{eventId}")
     @Produces("image/jpg")
     public Response getEventImage(@PathParam("eventId") String eventId) {
-        Optional<LocalEvent> eyeballMotionEvent = database.getEvent(eventId);
+        Optional<MotionEvent> eyeballMotionEvent = database.getEvent(eventId);
         if (!eyeballMotionEvent.isPresent()) {
             return Response.status(404).build();
         }
