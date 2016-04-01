@@ -5,7 +5,9 @@ import com.comandante.eyeballs.api.EyeballsResource;
 import com.comandante.eyeballs.camera.PictureTakingService;
 import com.comandante.eyeballs.camera.SaveMotionDetectedListener;
 import com.comandante.eyeballs.camera.MotionDetectionService;
+import com.comandante.eyeballs.storage.DropboxImageWriteService;
 import com.comandante.eyeballs.storage.LocalEventDatabase;
+import com.comandante.eyeballs.storage.MotionEventPersistence;
 import com.comandante.eyeballs.storage.SftpImageWriteService;
 import com.github.sarxos.webcam.Webcam;
 import com.google.common.collect.Lists;
@@ -21,6 +23,7 @@ import org.mapdb.DBMaker;
 
 import java.awt.*;
 import java.io.File;
+import java.util.List;
 
 // For this webcam library to work on ARM you need
 // mvn install:install-file -Dfile=./bridj-0.7-20140918.jar -DgroupId=com.nativelibs4java -DartifactId=bridj -Dversion=0.7-20140918 -Dpackaging=jar
@@ -81,10 +84,21 @@ public class EyeballsApplication extends Application<EyeballsConfiguration> {
                 .closeOnJvmShutdown()
                 .make();
 
-        SftpImageWriteService sftpImageWriteService = new SftpImageWriteService(eyeballsConfiguration);
-        sftpImageWriteService.startAsync();
+        List<MotionEventPersistence> persisters = Lists.newArrayList();
+        if (eyeballsConfiguration.getUseSftp()) {
+            SftpImageWriteService sftpImageWriteService = new SftpImageWriteService(eyeballsConfiguration);
+            sftpImageWriteService.startAsync();
+            persisters.add(sftpImageWriteService);
 
-        LocalEventDatabase eyeballsMotionEventDatabase = new LocalEventDatabase(db, eyeballsConfiguration, Lists.newArrayList(sftpImageWriteService));
+        }
+
+        if (eyeballsConfiguration.getUseDropbox()) {
+            DropboxImageWriteService dropboxImageWriteService = new DropboxImageWriteService(eyeballsConfiguration);
+            dropboxImageWriteService.startAsync();
+            persisters.add(dropboxImageWriteService);
+        }
+
+        LocalEventDatabase eyeballsMotionEventDatabase = new LocalEventDatabase(db, eyeballsConfiguration, persisters);
 
         MotionDetectionService motionDetectionService = new MotionDetectionService(eyeballsConfiguration,
                 new SaveMotionDetectedListener(eyeballsMotionEventDatabase));

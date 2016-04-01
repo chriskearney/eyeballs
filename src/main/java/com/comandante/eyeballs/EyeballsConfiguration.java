@@ -31,15 +31,26 @@ public class EyeballsConfiguration extends Configuration {
     @NotNull
     private Boolean useAuth = Boolean.FALSE;
 
+    @NotNull
+    private Boolean useSftp = Boolean.FALSE;
+
     private String sftpDestinationHost;
 
     private String sftpUsername;
 
-    private String sftpPrivateKey;
-
     private String sftpDestinationDirectory;
 
     private int sftpRemotePort = 22;
+
+    @NotNull
+    private Boolean useDropbox = Boolean.FALSE;
+
+    private String dropBoxAccessToken;
+
+    @JsonProperty
+    public String getDropBoxAccessToken() {
+        return dropBoxAccessToken;
+    }
 
     @JsonProperty
     public int getSftpRemotePort() {
@@ -99,5 +110,15 @@ public class EyeballsConfiguration extends Configuration {
     @JsonProperty
     public Boolean getUseAuth() {
         return useAuth;
+    }
+
+    @JsonProperty
+    public Boolean getUseSftp() {
+        return useSftp;
+    }
+
+    @JsonProperty
+    public Boolean getUseDropbox() {
+        return useDropbox;
     }
 }

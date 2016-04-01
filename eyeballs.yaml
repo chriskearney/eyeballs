@@ -13,6 +13,8 @@ sftpUsername: fibs
 sftpDestinationDirectory: /home/fibs/motion_events/
 sftpRemotePort: 443
 
+dropBoxAccessToken:
+
 server:
 #  softNofileLimit: 1000
 #  hardNofileLimit: 1000
