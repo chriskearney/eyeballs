@@ -24,14 +24,12 @@ public class DropboxImageWriteService extends AbstractScheduledService implement
 
     private final LinkedBlockingQueue<LocalEvent> events = new LinkedBlockingQueue<LocalEvent>();
     private final ConcurrentDateFormatAccess concurrentDateFormatAccess = new ConcurrentDateFormatAccess();
-    private final EyeballsConfiguration eyeballsConfiguration;
     private static Logger log = Logger.getLogger(DropboxImageWriteService.class.getName());
     private final DbxClientV2 dbxClientV2;
 
     public DropboxImageWriteService(EyeballsConfiguration eyeballsConfiguration) {
-        this.eyeballsConfiguration = eyeballsConfiguration;
-        DbxRequestConfig config = new DbxRequestConfig("Eyeballs/1.0", Locale.getDefault().toString());
-        dbxClientV2 = new DbxClientV2(config, eyeballsConfiguration.getDropBoxAccessToken());
+        dbxClientV2 = new DbxClientV2(new DbxRequestConfig("Eyeballs/1.0", Locale.getDefault().toString()),
+                        eyeballsConfiguration.getDropBoxAccessToken());
     }
 
     @Override
@@ -55,7 +53,6 @@ public class DropboxImageWriteService extends AbstractScheduledService implement
         for (LocalEvent localEvent : localEvents) {
             try (InputStream in = new ByteArrayInputStream(localEvent.getImage())) {
                 String dropboxPath = "/motion_events/" + concurrentDateFormatAccess.convertDateToString(localEvent.getTimestamp());
-
                 createFolder(dropboxPath);
 
                 FileMetadata metadata = dbxClientV2.files().uploadBuilder(dropboxPath + "/" + localEvent.getId() + ".jpg")
@@ -63,7 +60,7 @@ public class DropboxImageWriteService extends AbstractScheduledService implement
                         .withClientModified(localEvent.getTimestamp())
                         .uploadAndFinish(in);
 
-                log.info(metadata.toStringMultiline());
+                log.debug(metadata.toStringMultiline());
             } catch (Exception e) {
                 log.error("Error uploading to Dropbox. ", e);
             }
