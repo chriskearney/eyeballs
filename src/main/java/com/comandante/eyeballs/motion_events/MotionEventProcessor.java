@@ -4,6 +4,7 @@ import com.comandante.eyeballs.model.MotionEvent;
 import com.comandante.eyeballs.motion_events.consumers.local_fs.LocalFSMotionEventConsumer;
 import com.google.common.collect.Lists;
 import com.google.common.util.concurrent.AbstractScheduledService;
+import com.google.common.util.concurrent.Service;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentNavigableMap;
@@ -57,7 +58,7 @@ public class MotionEventProcessor {
         private LocalFSMotionEventConsumer localFSMotionEventConsumer;
 
         public Builder addMotionEventConsumer(MotionEventConsumer motionEventConsumer) {
-            if (motionEventConsumer instanceof AbstractScheduledService) {
+            if (motionEventConsumer instanceof Service) {
                 AbstractScheduledService consumer = (AbstractScheduledService) motionEventConsumer;
                 if (!consumer.isRunning()) {
                     consumer.startAsync();
