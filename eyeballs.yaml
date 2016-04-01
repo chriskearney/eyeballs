@@ -9,10 +9,10 @@ username: admin
 password: password
 
 useSftp: false;
-sftpDestinationHost: ktwit.net
-sftpUsername: fibs
-sftpDestinationDirectory: /home/fibs/motion_events/
-sftpRemotePort: 443
+sftpDestinationHost: 192.168.0.10
+sftpUsername: eyeballs
+sftpDestinationDirectory: /home/eyeballs/camera
+sftpRemotePort: 22
 
 useDropbox: false
 dropBoxAccessToken:
