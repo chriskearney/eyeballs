@@ -8,11 +8,13 @@ useAuth: false
 username: admin
 password: password
 
+useSftp: false;
 sftpDestinationHost: ktwit.net
 sftpUsername: fibs
 sftpDestinationDirectory: /home/fibs/motion_events/
 sftpRemotePort: 443
 
+useDropbox: false
 dropBoxAccessToken:
 
 server:
