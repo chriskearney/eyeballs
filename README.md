@@ -1,7 +1,7 @@
 [![Build Status](https://travis-ci.org/chriskearney/eyeballs.svg?branch=master)](https://travis-ci.org/chriskearney/eyeballs)
 # eyeballs
 
-A motion detection application built in Java, designed to run primarily on the Raspberry Pi, but also supports Mac OS X, Linux and Windows.  It runs "headless" with a built-in HTTP server to view motion events.  It can also leverage SFTP and/or Dropbox's API to remote upload motion events.
+A motion detection application built in Java, designed to run primarily on the Raspberry Pi, but also supports Mac OS X, Linux and Windows.  It runs "headless" with a built-in HTTP server to view motion events.  Optionally, you may configure Eyeballs to automatically upload Motion Events to a remote file service, current support exists for both SFTP and Dropbox.
 
 ##Build
 Download this version of [bridj-0.7-20140918.jar](https://github.com/chriskearney/eyeballs/blob/master/bridj-0.7-20140918.jar) that properly supports the ARM architecture (Raspberry Pi Support).  You will then need to install the jar file into your local Maven repository.  Eyeballs requires Java 8.
