@@ -12,3 +12,11 @@ $ mvn install:install-file -Dfile=./bridj-0.7-20140918.jar -DgroupId=com.nativel
 $ git clone https://github.com/chriskearney/eyeballs
 $ cd eyeballs ; mvn clean install
 ```
+The resulting jar file will be located here:
+```
+~/.m2/repository/com/comandante/eyeballs/1.0-SNAPSHOT/eyeballs-1.0-SNAPSHOT.jar
+```
+You can copy this jar file and the eyeballs.yaml (configuration) file to the Raspberry Pi.
+```
+scp ~/.m2/repository/com/comandante/eyeballs/1.0-SNAPSHOT/eyeballs-1.0-SNAPSHOT.jar pi@xxx.xxx.xxx.xxx:~/
+scp eyeballs/eyeballs.yaml pi@xxx.xxx.xxx.xxx:~/
