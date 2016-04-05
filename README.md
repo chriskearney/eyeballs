@@ -9,6 +9,6 @@ Download this version of [bridj-0.7-20140918.jar](https://github.com/chriskearne
 ```
 $ wget https://github.com/chriskearney/eyeballs/blob/master/bridj-0.7-20140918.jar
 $ mvn install:install-file -Dfile=./bridj-0.7-20140918.jar -DgroupId=com.nativelibs4java -DartifactId=bridj -Dversion=0.7-20140918 -Dpackaging=jar
-$ git clone git@github.com:chriskearney/eyeballs.git
+$ git clone https://github.com/chriskearney/eyeballs
 $ cd eyeballs ; mvn clean install
 ```
