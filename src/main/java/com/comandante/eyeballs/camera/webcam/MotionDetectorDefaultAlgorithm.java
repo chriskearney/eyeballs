@@ -1,4 +1,4 @@
-package com.comandante.eyeballs.camera;
+package com.comandante.eyeballs.camera.webcam;
 
 import com.github.sarxos.webcam.util.jh.JHBlurFilter;
 import com.github.sarxos.webcam.util.jh.JHGrayFilter;

@@ -1,5 +1,8 @@
 package com.comandante.eyeballs.camera;
 
+import com.comandante.eyeballs.EyeballsConfiguration;
+import com.comandante.eyeballs.camera.webcam.MotionDetectedEvent;
+import com.comandante.eyeballs.camera.webcam.MotionDetectedListener;
 import com.comandante.eyeballs.common.ImageFormatting;
 import com.comandante.eyeballs.model.MotionEvent;
 import com.comandante.eyeballs.motion_events.MotionEventProcessor;
@@ -16,17 +19,24 @@ import java.util.UUID;
 
 public class SaveMotionDetectedListener implements MotionDetectedListener {
     private final MotionEventProcessor eyeballsMotionEventDatabase;
+    private final EyeballsConfiguration eyeballsConfiguration;
     private static Logger log = Logger.getLogger(SaveMotionDetectedListener.class.getName());
 
-    public SaveMotionDetectedListener(MotionEventProcessor eyeballsMotionEventDatabase) {
+    public SaveMotionDetectedListener(MotionEventProcessor eyeballsMotionEventDatabase, EyeballsConfiguration eyeballsConfiguration) {
         this.eyeballsMotionEventDatabase = eyeballsMotionEventDatabase;
+        this.eyeballsConfiguration = eyeballsConfiguration;
     }
 
     @Override
     public void motionDetected(MotionDetectedEvent wme) {
         log.info("Start processing of motion event.");
         Date timestamp = new Date();
-        BufferedImage image = ImageFormatting.writeDate(wme.getCurrentOriginal(), timestamp);
+        BufferedImage image = null;
+        if (eyeballsConfiguration.getPrintDetails()) {
+            image = ImageFormatting.writeDateAndMotionDetails(wme, timestamp);
+        } else {
+            image = ImageFormatting.writeDate(wme.getCurrentOriginal(), timestamp);
+        }
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         try {
             ImageIO.write(image, "jpg", baos);

@@ -50,6 +50,14 @@ public class EyeballsConfiguration extends Configuration {
 
     private String dropBoxAccessToken;
 
+    @NotNull
+    private Boolean printDetails = Boolean.FALSE;
+
+    @JsonProperty
+    public Boolean getPrintDetails() {
+        return printDetails;
+    }
+
     @JsonProperty
     public Boolean getUseLocalStorage() {
         return useLocalStorage;

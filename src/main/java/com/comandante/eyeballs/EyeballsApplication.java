@@ -4,7 +4,7 @@ import com.comandante.eyeballs.api.BasicAuthenticator;
 import com.comandante.eyeballs.api.EyeballsResource;
 import com.comandante.eyeballs.camera.PictureTakingService;
 import com.comandante.eyeballs.camera.SaveMotionDetectedListener;
-import com.comandante.eyeballs.camera.MotionDetectionService;
+import com.comandante.eyeballs.camera.webcam.MotionDetectionService;
 import com.comandante.eyeballs.motion_events.consumers.dropbox.DropboxMotionEventConsumer;
 import com.comandante.eyeballs.motion_events.MotionEventProcessor;
 import com.comandante.eyeballs.motion_events.consumers.local_fs.LocalFSMotionEventConsumer;
@@ -94,7 +94,7 @@ public class EyeballsApplication extends Application<EyeballsConfiguration> {
         MotionEventProcessor motionEventProcessor = processorBuilder.build();
 
         MotionDetectionService motionDetectionService = new MotionDetectionService(eyeballsConfiguration,
-                new SaveMotionDetectedListener(motionEventProcessor));
+                new SaveMotionDetectedListener(motionEventProcessor, eyeballsConfiguration));
         motionDetectionService.startAndWait();
 
         EyeballsResource eyeballsResource = new EyeballsResource(webcam, motionEventProcessor, pictureTakingService);

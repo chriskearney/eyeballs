@@ -1,6 +1,5 @@
-package com.comandante.eyeballs.camera;
+package com.comandante.eyeballs.camera.webcam;
 
-import com.comandante.eyeballs.common.ImageFormatting;
 import com.github.sarxos.webcam.Webcam;
 import com.github.sarxos.webcam.WebcamExceptionHandler;
 import com.github.sarxos.webcam.WebcamMotionListener;

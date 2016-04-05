@@ -1,4 +1,4 @@
-package com.comandante.eyeballs.camera;
+package com.comandante.eyeballs.camera.webcam;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;

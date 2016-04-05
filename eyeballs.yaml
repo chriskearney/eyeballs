@@ -17,6 +17,8 @@ sftpRemotePort: 22
 useDropbox: true
 dropBoxAccessToken:
 
+printDetails: false
+
 server:
   applicationConnectors:
     - type: http

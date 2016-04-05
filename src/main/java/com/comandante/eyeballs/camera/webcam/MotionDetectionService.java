@@ -1,4 +1,4 @@
-package com.comandante.eyeballs.camera;
+package com.comandante.eyeballs.camera.webcam;
 
 import com.comandante.eyeballs.EyeballsConfiguration;
 import com.github.sarxos.webcam.Webcam;
