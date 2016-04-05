@@ -22,3 +22,8 @@ scp ~/.m2/repository/com/comandante/eyeballs/1.0-SNAPSHOT/eyeballs-1.0-SNAPSHOT.
 scp eyeballs/eyeballs.yaml pi@xxx.xxx.xxx.xxx:~/
 ```
 ##Running
+Before you can run eyeballs on the Raspberry Pi/Raspian, you will need to tweak a USB setting (applicable if you are using a USB webcam).  Insert dwc_otg.fiq_fsm_mask=0x3 some where on the kernel command line:
+```
+#insert: dwc_otg.fiq_fsm_mask=0x3
+sudo vi /boot/cmdline.txt
+```
