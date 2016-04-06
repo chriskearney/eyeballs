@@ -23,8 +23,7 @@ public class ImageFormatting {
         return writeImageDetails(image, writeString);
     }
 
-    public static BufferedImage writeImageDetails(BufferedImage bi, String details) {
-        BufferedImage image = createLargerImage(bi);
+    private static BufferedImage writeImageDetails(BufferedImage image, String details) {
         Graphics g = image.getGraphics();
         g.setFont(g.getFont().deriveFont(18f));
         g.setColor(Color.GRAY);

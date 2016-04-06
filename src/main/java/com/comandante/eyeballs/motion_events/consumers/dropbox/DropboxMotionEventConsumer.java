@@ -53,7 +53,7 @@ public class DropboxMotionEventConsumer extends AbstractScheduledService impleme
     private void uploadFiles(List<MotionEvent> motionEvents) throws IOException {
         for (MotionEvent motionEvent : motionEvents) {
             try (InputStream in = new ByteArrayInputStream(motionEvent.getImage())) {
-                String dropboxPath = "/com/comandante/eyeballs/motion_events/" + concurrentDateFormatAccess.convertDateToString(motionEvent.getTimestamp());
+                String dropboxPath = "/motion_events/" + concurrentDateFormatAccess.convertDateToString(motionEvent.getTimestamp());
                 createFolder(dropboxPath);
 
                 FileMetadata metadata = dbxClientV2.files().uploadBuilder(dropboxPath + "/" + motionEvent.getId() + ".jpg")

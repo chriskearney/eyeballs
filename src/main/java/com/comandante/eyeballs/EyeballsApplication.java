@@ -75,7 +75,6 @@ public class EyeballsApplication extends Application<EyeballsConfiguration> {
         webcam.setViewSize(new Dimension(eyeballsConfiguration.getImageWidth(), eyeballsConfiguration.getImageHeight()));
         webcam.open();
 
-
         MotionEventProcessor.Builder processorBuilder = new MotionEventProcessor.Builder();
 
         if (eyeballsConfiguration.getUseSftp()) {
