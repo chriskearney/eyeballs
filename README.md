@@ -13,6 +13,40 @@ After eyeballs is running, you can acccess the HTTP interface by navigating to a
 * **http://\<raspberry-pi-address\>:4444/view/recent_events/1000**
 * **http://\<raspberry-pi-address\>:4444/view/recent_events/image**
 
+##Configuration
+####Http Basic Authorization
+Place in eyeballs.yaml:
+```
+useAuth: true
+username: admin
+password: password
+```
+####SFTP Motion Event Upload
+Place in eyeballs.yaml, the sftpDestinationHost must be configured to allow password-less (key-based) ssh logins. 
+```
+useSftp: true
+sftpDestinationHost: 192.168.0.10
+sftpUsername: eyeballs
+sftpDestinationDirectory: /home/eyeballs/camera
+sftpRemotePort: 22
+```
+####Dropbox Motion Event Upload
+You can obtain a Dropbox access token by using a built in class that is included with the eyeballs jar file.  First you need to go to your Dropbox account and create an "app" that will allow eyeballs to upload files to your Dropbox account.
+
+[Create App - Dropbox](https://www.dropbox.com/developers-v1/apps/create)
+
+You will want to create an "Dropbox API App" type application.  You can also select "My app only needs access to files it creates."  Once your App is created, use both the App Key and App Secret with the following command:
+
+```
+java -cp ./eyeballs-1.0-SNAPSHOT.jar com.comandante.eyeballs.DropwizardToken <App Key> <App Secret>
+```
+This will ask you to open a url on dropbox, and copy/paste an authorization code into the terminal.  After you provide the authorization code, the program will retrieve your dropbox Access Token.  Use this token in your eyeballs.yaml file:
+```
+useDropbox: true
+dropBoxAccessToken: <dropbox access token>
+```
+
+
 ##Build
 Download this version of [bridj-0.7-20140918.jar](https://github.com/chriskearney/eyeballs/blob/master/bridj-0.7-20140918.jar) that properly supports the ARM architecture (Raspberry Pi Support).  You will then need to install the jar file into your local Maven repository.  Eyeballs requires Java 8.
 
