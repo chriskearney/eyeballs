@@ -43,4 +43,8 @@ I typically use a screen session to run the eyeballs jar file so that I can keep
 ```
 sudo java -jar eyeballs-1.0-SNAPSHOT.jar server eyeballs.yaml
 ```
-After eyeballs is running, you can acccess the HTTP interface by navigating to *http://<raspberry-pi-ip>:4444/image*
+After eyeballs is running, you can acccess the HTTP interface by navigating to 
+**http://<raspberry-pi-ip>:4444/image**
+**http://<raspberry-pi-ip>:4444/view/recent_events/1000**
+**http://<raspberry-pi-ip>:4444/view/recent_events/image**
+
