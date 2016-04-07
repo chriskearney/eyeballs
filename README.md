@@ -3,8 +3,10 @@
 
 A motion detection application built in Java, designed to run primarily on the Raspberry Pi, but also supports Mac OS X, Linux and Windows.  It runs "headless" with a built-in HTTP server to view motion events.  Optionally, you may configure Eyeballs to automatically upload Motion Events to a remote file service, current support exists for both SFTP and Dropbox.
 
+##Download
+[eyeballs-1.0-SNAPSHOT.jar](http://ktwit.net/eyeballs-1.0-SNAPSHOT.jar)
 ##Running
-I typically use a screen session to run the eyeballs jar file so that I can keep it running in the background. Please note that instead of using sudo, you could change the permissions of the /dev/video0 file to be readable by non root users.
+I typically use a screen session to run the eyeballs jar file so that I can keep it running in the background. Please note that instead of using sudo, you could change the permissions of the /dev/video0 file to be readable by non root users.  If you are running eyeballs on the raspberry pi, please see the necessary "Raspian Tweaks" section down below.
 ```
 sudo java -jar eyeballs-1.0-SNAPSHOT.jar server eyeballs.yaml
 ```
