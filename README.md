@@ -37,3 +37,9 @@ Add "sudo modprobe bcm2835-v4l2" to /etc/rc.local
 #add sudo modprobe bcm2835-v4l2
 # sudo vi /etc/rc.local 
 ```
+
+##Running
+I typically use a screen session to run the eyeballs jar file so that I can keep it running in the background.
+```
+sudo java -jar eyeballs-1.0-SNAPSHOT.jar server eyeballs.yaml
+```
