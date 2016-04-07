@@ -6,7 +6,7 @@ A motion detection application built in Java, designed to run primarily on the R
 ##Download
 [eyeballs-1.0-SNAPSHOT.jar](http://ktwit.net/eyeballs-1.0-SNAPSHOT.jar)
 
-[eyeballs.yaml](https://github.com/chriskearney/eyeballs/blob/master/eyeballs.yaml)
+[eyeballs.yaml](https://raw.githubusercontent.com/chriskearney/eyeballs/master/eyeballs.yaml)
 ##Running
 I typically use a screen session to run the eyeballs jar file so that I can keep it running in the background. Please note that instead of using sudo, you could change the permissions of the /dev/video0 file to be readable by non root users.  If you are running eyeballs on the raspberry pi, please see the necessary "Raspian Tweaks" section down below.
 ```
