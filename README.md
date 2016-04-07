@@ -40,7 +40,7 @@ You will want to create an "Dropbox API App" type application.  You can also sel
 ```
 java -cp ./eyeballs-1.0-SNAPSHOT.jar com.comandante.eyeballs.DropwizardToken <App Key> <App Secret>
 ```
-This will ask you to open a url on dropbox, and copy/paste an authorization code into the terminal.  After you provide the authorization code, the program will retrieve your dropbox Access Token.  Use this token in your eyeballs.yaml file:
+After you provide the authorization code from the dropbox url, you will then be provided access to a valid Access Token.  Use this Access Token in your eyeballs.yaml file:
 ```
 useDropbox: true
 dropBoxAccessToken: <dropbox access token>
