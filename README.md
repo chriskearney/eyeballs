@@ -30,7 +30,7 @@ $ raspbi-config
 ```
 Add "sudo modprobe bcm2835-v4l2" to /etc/rc.local
 ```
-# add sudo modprobe bcm2835-v4l2
+# add: sudo modprobe bcm2835-v4l2
 # sudo vi /etc/rc.local 
 ```
 
