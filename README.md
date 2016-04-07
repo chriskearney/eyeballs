@@ -37,12 +37,13 @@ You can obtain a Dropbox access token by using a built in class that is included
 
 [Create App - Dropbox](https://www.dropbox.com/developers-v1/apps/create)
 
-Choose "Dropbox API App" and select "My app only needs access to files it creates."  Once your App is created, grab both the App Key and App Secret and use them with the following command:
+Choose "Dropbox API App" and select "My app only needs access to files it creates."  Once your App is created, grab both the App Key and App Secret and use them with the following command to obtain a Dropbox Access Token:
 
 ```
 java -cp ./eyeballs-1.0-SNAPSHOT.jar com.comandante.eyeballs.DropwizardToken <App Key> <App Secret>
 ```
-After you provide the authorization code from the dropbox url, you will then be given access to a Dropbox Access Token.  Use this Access Token in your eyeballs.yaml file:
+
+Use this Access Token in your eyeballs.yaml file:
 ```
 useDropbox: true
 dropBoxAccessToken: <dropbox access token>
