@@ -14,7 +14,7 @@ sftpUsername: eyeballs
 sftpDestinationDirectory: /home/eyeballs/camera
 sftpRemotePort: 22
 
-useDropbox: true
+useDropbox: false
 dropBoxAccessToken:
 
 printDetails: false
