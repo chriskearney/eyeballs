@@ -43,10 +43,13 @@ public class EyeballsConfiguration extends Configuration {
     private int sftpRemotePort = 22;
 
     @NotNull
-    private Boolean useLocalStorage = Boolean.TRUE;
+    private Boolean useLocalPersistence = Boolean.TRUE;
 
     @NotNull
     private Boolean useDropbox = Boolean.FALSE;
+
+    @NotNull
+    private Boolean useDropboxPersistence = Boolean.FALSE;
 
     private String dropBoxAccessToken;
 
@@ -59,8 +62,8 @@ public class EyeballsConfiguration extends Configuration {
     }
 
     @JsonProperty
-    public Boolean getUseLocalStorage() {
-        return useLocalStorage;
+    public Boolean getUseLocalPersistence() {
+        return useLocalPersistence;
     }
 
     @JsonProperty
@@ -137,4 +140,9 @@ public class EyeballsConfiguration extends Configuration {
     public Boolean getUseDropbox() {
         return useDropbox;
     }
+
+    public Boolean getUseDropboxPersistence() {
+        return useDropboxPersistence;
+    }
 }
+

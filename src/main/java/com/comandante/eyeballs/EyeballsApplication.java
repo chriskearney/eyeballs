@@ -5,8 +5,11 @@ import com.comandante.eyeballs.api.EyeballsResource;
 import com.comandante.eyeballs.camera.PictureTakingService;
 import com.comandante.eyeballs.camera.SaveMotionDetectedListener;
 import com.comandante.eyeballs.camera.webcam.MotionDetectionService;
-import com.comandante.eyeballs.motion_events.consumers.dropbox.DropboxMotionEventConsumer;
+import com.comandante.eyeballs.model.LocalEventSerializer;
+import com.comandante.eyeballs.model.MotionEvent;
 import com.comandante.eyeballs.motion_events.MotionEventProcessor;
+import com.comandante.eyeballs.motion_events.consumers.dropbox.DropBoxMotionEventPersistence;
+import com.comandante.eyeballs.motion_events.consumers.dropbox.DropboxMotionEventConsumer;
 import com.comandante.eyeballs.motion_events.consumers.local_fs.LocalFSMotionEventConsumer;
 import com.comandante.eyeballs.motion_events.consumers.sftp.SftpMotionEventConsumer;
 import com.github.sarxos.webcam.Webcam;
@@ -17,6 +20,7 @@ import io.dropwizard.auth.basic.BasicCredentialAuthFilter;
 import io.dropwizard.setup.Bootstrap;
 import io.dropwizard.setup.Environment;
 import io.dropwizard.views.ViewBundle;
+import org.mapdb.BTreeMap;
 import org.mapdb.DB;
 import org.mapdb.DBMaker;
 
@@ -63,6 +67,10 @@ public class EyeballsApplication extends Application<EyeballsConfiguration> {
                             .setRealm("Eyeballs Motion Detection Server")
                             .buildAuthFilter()));
         }
+        DB db = buildMapDb(eyeballsConfiguration);
+        BTreeMap<String, MotionEvent> motionEventStore = db.createTreeMap("motionEventStore")
+                .valueSerializer(new LocalEventSerializer())
+                .makeOrGet();
 
         Webcam webcam = Webcam.getDefault();
         if (webcam == null) {
@@ -85,10 +93,18 @@ public class EyeballsApplication extends Application<EyeballsConfiguration> {
             processorBuilder.addMotionEventConsumer(new DropboxMotionEventConsumer(eyeballsConfiguration));
         }
 
-        if (eyeballsConfiguration.getUseLocalStorage()) {
+        if (eyeballsConfiguration.getUseLocalPersistence()) {
             createUnderylingStorageDirectories(eyeballsConfiguration);
-            processorBuilder.addMotionEventConsumer(new LocalFSMotionEventConsumer(buildMapDb(eyeballsConfiguration), eyeballsConfiguration));
+            LocalFSMotionEventConsumer localFSMotionEventConsumer = new LocalFSMotionEventConsumer(db, eyeballsConfiguration, motionEventStore);
+            processorBuilder.addMotionEventConsumer(localFSMotionEventConsumer);
+            processorBuilder.motionEventPersitence(localFSMotionEventConsumer);
         }
+
+        if (eyeballsConfiguration.getUseDropboxPersistence()) {
+            processorBuilder.motionEventPersitence(new DropBoxMotionEventPersistence(eyeballsConfiguration, motionEventStore));
+        }
+
+        processorBuilder.motionEventStore(motionEventStore);
 
         MotionEventProcessor motionEventProcessor = processorBuilder.build();
 

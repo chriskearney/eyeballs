@@ -33,7 +33,7 @@ public class SaveMotionDetectedListener implements MotionDetectedListener {
         Date timestamp = new Date();
         BufferedImage image = null;
         if (eyeballsConfiguration.getPrintDetails()) {
-            image = ImageFormatting.writeDateAndMotionDetails(wme, timestamp);
+            image = ImageFormatting.writeMotionDetails(wme);
         } else {
             image = ImageFormatting.writeDate(wme.getCurrentOriginal(), timestamp);
         }

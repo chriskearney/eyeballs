@@ -69,6 +69,11 @@ useDropbox: true
 dropBoxAccessToken: <dropbox access token>
 ```
 
+If you wish, you can also have Dropbox act as the backing store for all of the images served via the API/WEB interface.
+```
+useDropboxPersistence: true
+```
+
 ##Build
 Download this version of [bridj-0.7-20140918.jar](https://github.com/chriskearney/eyeballs/blob/master/bridj-0.7-20140918.jar) that properly supports the ARM architecture (Raspberry Pi Support).  You will then need to install the jar file into your local Maven repository.  Eyeballs requires Java 8.
 

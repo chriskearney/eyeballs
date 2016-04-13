@@ -1,24 +1,31 @@
 package com.comandante.eyeballs.motion_events;
 
 import com.comandante.eyeballs.model.MotionEvent;
-import com.comandante.eyeballs.motion_events.consumers.local_fs.LocalFSMotionEventConsumer;
 import com.google.common.collect.Lists;
 import com.google.common.util.concurrent.AbstractScheduledService;
 import com.google.common.util.concurrent.Service;
+import org.mapdb.BTreeMap;
 
-import java.util.*;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
 import java.util.concurrent.ConcurrentNavigableMap;
+
+import static java.util.Objects.requireNonNull;
 
 public class MotionEventProcessor {
 
-    private final Optional<LocalFSMotionEventConsumer> localFSMotionEventConsumer;
     private final List<MotionEventConsumer> motionEventConsumers;
+    private final BTreeMap<String, MotionEvent> motionEventStore;
+    private final MotionEventPersistence motionEventPersistence;
 
-    private MotionEventProcessor(Optional<LocalFSMotionEventConsumer> localFSMotionEventConsumer,
-                                 List<MotionEventConsumer> motionEventConsumers) {
-        this.localFSMotionEventConsumer = localFSMotionEventConsumer;
-        this.motionEventConsumers = Lists.newArrayList();
-        this.motionEventConsumers.addAll(motionEventConsumers);
+    private MotionEventProcessor(List<MotionEventConsumer> motionEventConsumers,
+                                 BTreeMap<String, MotionEvent> motionEventStore,
+                                 MotionEventPersistence motionEventPersistence) {
+        this.motionEventConsumers = Lists.newArrayList(motionEventConsumers);
+        this.motionEventStore = motionEventStore;
+        this.motionEventPersistence = motionEventPersistence;
     }
 
     public void save(MotionEvent event) {
@@ -28,19 +35,13 @@ public class MotionEventProcessor {
     }
 
     public Optional<MotionEvent> getEvent(String id) {
-        if (localFSMotionEventConsumer.isPresent()) {
-            return localFSMotionEventConsumer.get().getEvent(id);
-        }
-        return Optional.empty();
+        return motionEventPersistence.getEvent(id);
     }
 
     public List<MotionEvent> getRecentEvents(long num) {
         List<MotionEvent> events = Lists.newArrayList();
-        if (!localFSMotionEventConsumer.isPresent()) {
-            return events;
-        }
         ConcurrentNavigableMap<String, MotionEvent> stringLocalEventConcurrentNavigableMap =
-                localFSMotionEventConsumer.get().getMotionEventStore().descendingMap();
+                motionEventStore.descendingMap();
         Set<Map.Entry<String, MotionEvent>> entries = stringLocalEventConcurrentNavigableMap.entrySet();
         int i = 0;
         for (Map.Entry<String, MotionEvent> event : entries) {
@@ -55,7 +56,18 @@ public class MotionEventProcessor {
 
     public static class Builder {
         private List<MotionEventConsumer> motionEventConsumers = Lists.newArrayList();
-        private LocalFSMotionEventConsumer localFSMotionEventConsumer;
+        private MotionEventPersistence motionEventPersistence;
+        private BTreeMap<String, MotionEvent> motionEventStore;
+
+        public Builder motionEventStore(BTreeMap<String, MotionEvent> motionEventStore) {
+            this.motionEventStore = motionEventStore;
+            return this;
+        }
+
+        public Builder motionEventPersitence(MotionEventPersistence motionEventPersistence) {
+            this.motionEventPersistence = motionEventPersistence;
+            return this;
+        }
 
         public Builder addMotionEventConsumer(MotionEventConsumer motionEventConsumer) {
             if (motionEventConsumer instanceof Service) {
@@ -64,15 +76,13 @@ public class MotionEventProcessor {
                     consumer.startAsync();
                 }
             }
-            if (motionEventConsumer instanceof LocalFSMotionEventConsumer) {
-                localFSMotionEventConsumer = (LocalFSMotionEventConsumer) motionEventConsumer;
-            }
             this.motionEventConsumers.add(motionEventConsumer);
             return this;
         }
 
         public MotionEventProcessor build() {
-            return new MotionEventProcessor(Optional.ofNullable(localFSMotionEventConsumer), motionEventConsumers);
+            requireNonNull(motionEventStore);
+            return new MotionEventProcessor(motionEventConsumers, motionEventStore, motionEventPersistence);
         }
     }
 }
