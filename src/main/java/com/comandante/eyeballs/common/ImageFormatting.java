@@ -11,7 +11,7 @@ import java.util.Date;
 
 public class ImageFormatting {
 
-    public static BufferedImage writeDateAndMotionDetails(MotionDetectedEvent event, Date date) {
+    public static BufferedImage writeMotionDetails(MotionDetectedEvent event) {
         BufferedImage image = createLargerImage(event.getCurrentOriginal());
         final String writeString = "points: " + event.getPoints().size() + "| area: " + round(event.getArea(), 2) + "| cog: " + event.getCog().getX() + "x" + event.getCog().getY();
         return writeImageDetails(image, writeString);
@@ -32,7 +32,7 @@ public class ImageFormatting {
         return image;
     }
 
-    public static BufferedImage createLargerImage(BufferedImage bi) {
+    private static BufferedImage createLargerImage(BufferedImage bi) {
         BufferedImage tile = new BufferedImage(bi.getWidth(), bi.getHeight() + 22, BufferedImage.TYPE_3BYTE_BGR);
         Graphics g = tile.getGraphics();
         g.drawImage(bi,0,0, null);

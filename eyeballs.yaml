@@ -1,6 +1,8 @@
 areaThreshold: 3
 pixelDifferentThreshold: 26
 
+useLocalPersistence: true
+
 imageWidth: 640
 imageHeight: 480
 
@@ -14,7 +16,8 @@ sftpUsername: eyeballs
 sftpDestinationDirectory: /home/eyeballs/camera
 sftpRemotePort: 22
 
-useDropbox: true
+useDropbox: false
+useDropboxPersistence: false
 dropBoxAccessToken:
 
 printDetails: false

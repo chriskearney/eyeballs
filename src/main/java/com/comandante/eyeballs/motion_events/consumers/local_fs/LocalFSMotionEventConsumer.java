@@ -33,11 +33,8 @@ public class LocalFSMotionEventConsumer extends AbstractScheduledService impleme
     private final ConcurrentDateFormatAccess concurrentDateFormatAccess = new ConcurrentDateFormatAccess();
     private static Logger log = Logger.getLogger(SaveMotionDetectedListener.class.getName());
 
-    public LocalFSMotionEventConsumer(DB db, EyeballsConfiguration eyeballsConfiguration) {
-        this.motionEventStore = db
-                .createTreeMap("motionEventStore")
-                .valueSerializer(new LocalEventSerializer())
-                .makeOrGet();
+    public LocalFSMotionEventConsumer(DB db, EyeballsConfiguration eyeballsConfiguration, BTreeMap<String, MotionEvent> motionEventStore) {
+        this.motionEventStore = motionEventStore;
         this.db = db;
         this.eyeballsConfiguration = eyeballsConfiguration;
     }
@@ -73,10 +70,6 @@ public class LocalFSMotionEventConsumer extends AbstractScheduledService impleme
             log.error("Unable to retrieve motion event image from disk store.", e);
         }
         return Optional.ofNullable(retMotionEvent);
-    }
-
-    public BTreeMap<String, MotionEvent> getMotionEventStore() {
-        return motionEventStore;
     }
 
     private void writeImageToDisk(MotionEvent motionEvent) throws IOException, ParseException {
