@@ -27,10 +27,12 @@ public class DropboxMotionEventConsumer extends AbstractScheduledService impleme
     private final ConcurrentDateFormatAccess concurrentDateFormatAccess = new ConcurrentDateFormatAccess();
     private static Logger log = Logger.getLogger(DropboxMotionEventConsumer.class.getName());
     private final DbxClientV2 dbxClientV2;
+    private final EyeballsConfiguration eyeballsConfiguration;
 
     public DropboxMotionEventConsumer(EyeballsConfiguration eyeballsConfiguration) {
         dbxClientV2 = new DbxClientV2(new DbxRequestConfig("Eyeballs/1.0", Locale.getDefault().toString()),
                         eyeballsConfiguration.getDropBoxAccessToken());
+        this.eyeballsConfiguration = eyeballsConfiguration;
     }
 
     @Override
@@ -53,7 +55,7 @@ public class DropboxMotionEventConsumer extends AbstractScheduledService impleme
     private void uploadFiles(List<MotionEvent> motionEvents) throws IOException {
         for (MotionEvent motionEvent : motionEvents) {
             try (InputStream in = new ByteArrayInputStream(motionEvent.getImage())) {
-                String dropboxPath = "/motion_events/" + concurrentDateFormatAccess.convertDateToString(motionEvent.getTimestamp());
+                String dropboxPath = "/motion_events/" + eyeballsConfiguration.getCameraName() + "/" + concurrentDateFormatAccess.convertDateToString(motionEvent.getTimestamp());
                 createFolder(dropboxPath);
 
                 FileMetadata metadata = dbxClientV2.files().uploadBuilder(dropboxPath + "/" + motionEvent.getId() + ".jpg")

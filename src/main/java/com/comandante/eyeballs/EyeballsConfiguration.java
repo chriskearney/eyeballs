@@ -20,6 +20,9 @@ public class EyeballsConfiguration extends Configuration {
     private int imageHeight = 480;
 
     @NotNull
+    private String cameraName = "camera_name";
+
+    @NotNull
     private String localStorageDirectory = "local_storage";
 
     @NotNull
@@ -136,5 +139,10 @@ public class EyeballsConfiguration extends Configuration {
     @JsonProperty
     public Boolean getUseDropbox() {
         return useDropbox;
+    }
+
+    @JsonProperty
+    public String getCameraName() {
+        return cameraName;
     }
 }
