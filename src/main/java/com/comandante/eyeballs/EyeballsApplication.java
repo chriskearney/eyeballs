@@ -13,13 +13,14 @@ import com.comandante.eyeballs.motion_events.consumers.dropbox.DropboxMotionEven
 import com.comandante.eyeballs.motion_events.consumers.local_fs.LocalFSMotionEventConsumer;
 import com.comandante.eyeballs.motion_events.consumers.sftp.SftpMotionEventConsumer;
 import com.github.sarxos.webcam.Webcam;
-import com.google.common.io.Files;
+import com.github.sarxos.webcam.WebcamResolution;
 import io.dropwizard.Application;
 import io.dropwizard.auth.AuthDynamicFeature;
 import io.dropwizard.auth.basic.BasicCredentialAuthFilter;
 import io.dropwizard.setup.Bootstrap;
 import io.dropwizard.setup.Environment;
 import io.dropwizard.views.ViewBundle;
+import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.mapdb.BTreeMap;
 import org.mapdb.DB;
 import org.mapdb.DBMaker;
@@ -27,6 +28,12 @@ import org.mapdb.DBMaker;
 import java.awt.*;
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.security.Security;
+import java.util.Arrays;
+import java.util.List;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 // For this webcam library to work on ARM you need
 // mvn install:install-file -Dfile=./bridj-0.7-20140918.jar -DgroupId=com.nativelibs4java -DartifactId=bridj -Dversion=0.7-20140918 -Dpackaging=jar
@@ -60,6 +67,10 @@ public class EyeballsApplication extends Application<EyeballsConfiguration> {
     @Override
     public void run(EyeballsConfiguration eyeballsConfiguration, Environment environment) throws Exception {
 
+        Security.addProvider(new BouncyCastleProvider());
+
+        createUnderylingStorageDirectories(eyeballsConfiguration);
+
         if (eyeballsConfiguration.getUseAuth()) {
             environment.jersey().register(new AuthDynamicFeature(
                     new BasicCredentialAuthFilter.Builder<BasicAuthenticator.EyeballUser>()
@@ -80,6 +91,12 @@ public class EyeballsApplication extends Application<EyeballsConfiguration> {
         PictureTakingService pictureTakingService = new PictureTakingService(webcam);
         webcam.addWebcamListener(pictureTakingService);
 
+        Dimension[] dimensions = (Dimension[]) Arrays.stream(WebcamResolution.values())
+                .map(WebcamResolution::getSize)
+                .collect(Collectors.toList())
+                .toArray();
+
+        webcam.setCustomViewSizes(dimensions);
         webcam.setViewSize(new Dimension(eyeballsConfiguration.getImageWidth(), eyeballsConfiguration.getImageHeight()));
         webcam.open();
 
@@ -94,7 +111,6 @@ public class EyeballsApplication extends Application<EyeballsConfiguration> {
         }
 
         if (eyeballsConfiguration.getUseLocalPersistence()) {
-            createUnderylingStorageDirectories(eyeballsConfiguration);
             LocalFSMotionEventConsumer localFSMotionEventConsumer = new LocalFSMotionEventConsumer(db, eyeballsConfiguration, motionEventStore);
             processorBuilder.addMotionEventConsumer(localFSMotionEventConsumer);
             processorBuilder.motionEventPersitence(localFSMotionEventConsumer);
@@ -119,7 +135,7 @@ public class EyeballsApplication extends Application<EyeballsConfiguration> {
 
     private static void createUnderylingStorageDirectories(EyeballsConfiguration eyeballsConfiguration) throws IOException {
         File file = new File(eyeballsConfiguration.getLocalStorageDirectory() + "/event_database");
-        Files.createParentDirs(file);
+        com.google.common.io.Files.createParentDirs(file);
     }
 
     private static DB buildMapDb(EyeballsConfiguration eyeballsConfiguration) {

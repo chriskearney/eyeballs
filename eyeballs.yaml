@@ -1,26 +1,43 @@
 areaThreshold: 3
 pixelDifferentThreshold: 26
 
+# Should we keep images around on the local raspberry pi storage device?  This will need to be enabled in order to view
+# "recent" images directly on the raspberry pi.
 useLocalPersistence: true
 
-imageWidth: 640
-imageHeight: 480
+# Valid Dimensions
+#QQVGA(176, 144),
+#QVGA(320, 240),
+#CIF(352, 288),
+#HVGA(480, 400),
+#VGA(640, 480),
+#PAL(768, 576),
+#SVGA(800, 600),
+#XGA(1024, 768),
+#HD720(1280, 720),
+#WXGA(1280, 768),
+#SXGA(1280, 1024),
+#UXGA(1600, 1200),
+#QXGA(2048, 1536);
+
+imageWidth: 2048
+imageHeight: 1536
 
 useAuth: false
 username: admin
 password: password
 
-useSftp: false
-sftpDestinationHost: 192.168.0.10
-sftpUsername: eyeballs
-sftpDestinationDirectory: /home/eyeballs/camera
-sftpRemotePort: 22
+useSftp: true
+sftpDestinationHost: <OMIT>
+sftpUsername: cam
+sftpDestinationDirectory: /home/cam/capture
+sftpRemotePort: 30000
 
 useDropbox: false
 useDropboxPersistence: false
-dropBoxAccessToken:
+dropBoxAccessToken: <OMIT>
 
-printDetails: false
+printDetails: true
 
 server:
   applicationConnectors:
@@ -44,3 +61,5 @@ logging:
       archivedFileCount: 7
       timeZone: UTC
       maxFileSize: 10MB
+
+
